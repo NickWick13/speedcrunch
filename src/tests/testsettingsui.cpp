@@ -1919,20 +1919,27 @@ void TestSettingsUi::appearance_presets_follow_settings_reset()
 void TestSettingsUi::appearance_presets_default_to_classic_on_first_launch_only_data()
 {
     QTest::addColumn<bool>("firstLaunch");
-    QTest::newRow("first-launch") << true;
-    QTest::newRow("existing-installation") << false;
+    QTest::addColumn<bool>("emptyFile");
+    // A new installation starts without a settings file, so the first load
+    // also runs the legacy migration.
+    QTest::newRow("first-launch") << true << true;
+    // Reset All Settings keeps the current schema version in the file.
+    QTest::newRow("after-reset") << true << false;
+    QTest::newRow("existing-installation") << false << false;
 }
 
 void TestSettingsUi::appearance_presets_default_to_classic_on_first_launch_only()
 {
     QFETCH(bool, firstLaunch);
+    QFETCH(bool, emptyFile);
     MainWindowStateGuard guard;
     Settings* settings = guard.settings;
     {
         QSettings persisted(Settings::getConfigPath() + QStringLiteral("/SpeedCrunch.ini"),
                             QSettings::IniFormat);
         persisted.clear();
-        persisted.setValue(QStringLiteral("ConfigVersion"), 1200);
+        if (!emptyFile)
+            persisted.setValue(QStringLiteral("ConfigVersion"), 1200);
         // An installation from before the presets saved other settings but
         // never its appearance, which then defaulted to Modern.
         if (!firstLaunch)

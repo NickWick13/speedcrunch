@@ -1051,8 +1051,9 @@ QString Settings::digitGroupingSeparator() const
 // Settings migration from legacy (0.11 and before) to 0.12 (ConfigVersion 1200).
 static void migrateSettings_legacyTo1200(QSettings* settings, const QString& KEY)
 {
-#ifdef SPEEDCRUNCH_PORTABLE
-    // This is the same as the new path, but let's cut down
+#if defined(SPEEDCRUNCH_PORTABLE) || defined(SPEEDCRUNCH_UI_TEST)
+    // This is the same as the new path, but let's cut down. UI tests must
+    // never copy or remove the user's own legacy settings.
     QSettings* legacy = new QSettings(Settings::getConfigPath() + "/" + KEY + ".ini", QSettings::IniFormat);
 #else
     QSettings* legacy = new QSettings(QSettings::NativeFormat, QSettings::UserScope, KEY, KEY);
@@ -1088,6 +1089,11 @@ static void migrateSettings_legacyTo1200(QSettings* settings, const QString& KEY
         delete legacy;
     }
 
+    // A new settings file has nothing to convert. The conversions below would
+    // only store defaults, and Settings::load() would then mistake the file
+    // for an existing installation and skip the first launch style preset.
+    if (!settings->childGroups().contains(KEY))
+        return;
 
     // ColorScheme -> ColorSchemeName
     QString colorSchemeName;

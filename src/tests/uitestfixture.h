@@ -88,8 +88,7 @@ inline void resetSettings()
     QSettings persisted(Settings::getConfigPath() + QStringLiteral("/SpeedCrunch.ini"),
                         QSettings::IniFormat);
     persisted.clear();
-    // Start with the current schema so loading defaults cannot migrate the
-    // user's legacy native settings into the isolated test directory.
+    // Start with the current schema, like an existing installation.
     persisted.setValue(QStringLiteral("ConfigVersion"), 1200);
     // An empty file is a first launch, which applies the Classic style preset.
     // Most UI tests expect the Modern appearance of existing installations.
