@@ -312,6 +312,7 @@ private:
     bool shouldRestoreKeptWindowSize(const QSize&) const;
     void rememberKeptDockSizes();
     void restoreKeptDockSizes();
+    void applyPendingDockSizes();
     enum class DockFitStep { ResizeDock, GrowWindow, FinalResizeDock };
     void fitDockToColumns(QDockWidget*, Qt::DockWidgetArea, DockFitStep);
     void createUi();

@@ -8845,6 +8845,17 @@ void MainWindow::restoreKeptDockSizes()
         return;
     resizeDocks(docks, widths, Qt::Horizontal);
     resizeDocks(docks, heights, Qt::Vertical);
+    applyPendingDockSizes();
+}
+
+void MainWindow::applyPendingDockSizes()
+{
+    // resizeDocks() only stores the new sizes until the next layout pass. An
+    // older window size can come from the window system before that pass. The
+    // docks then still have their old sizes, and those sizes would return with
+    // the kept window size. So apply the new sizes now.
+    if (QLayout* mainLayout = layout())
+        mainLayout->activate();
 }
 
 void MainWindow::shrinkLoneEdgeDockToMinimumHeight(QDockWidget* dock)
@@ -8867,6 +8878,7 @@ void MainWindow::shrinkLoneEdgeDockToMinimumHeight(QDockWidget* dock)
         }
         // The main window keeps the dock at its minimum height.
         resizeDocks({target}, {1}, Qt::Vertical);
+        applyPendingDockSizes();
     });
 }
 
@@ -8894,6 +8906,7 @@ void MainWindow::fitDockToColumns(QDockWidget* dock, Qt::DockWidgetArea area, Do
 
         if (step != DockFitStep::GrowWindow) {
             resizeDocks({target}, {target->width() + missingWidth}, Qt::Horizontal);
+            applyPendingDockSizes();
             if (step == DockFitStep::ResizeDock)
                 fitDockToColumns(target, area, DockFitStep::GrowWindow);
             return;

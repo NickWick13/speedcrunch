@@ -157,6 +157,7 @@ private slots:
     void kept_window_size_handles_native_resize_requests_data();
     void kept_window_size_handles_native_resize_requests();
     void shown_dock_keeps_window_size_from_window_system();
+    void fitted_and_kept_dock_widths_apply_at_once();
     void view_dock_menu_tracks_and_changes_only_active_window();
     void closing_and_reopening_docks_keeps_attached_widgets();
     void dock_column_orders_survive_relaunch_data();
@@ -2372,7 +2373,11 @@ void TestDockLayoutUi::lone_formula_book_opens_wide_enough_for_page()
     settings->keypadVisible = false;
 
     MainWindow window;
-    window.resize(1400, 600);
+    // Leave the window room to grow, also on a small screen. On Wayland, the
+    // compositor can send this first size again while the book opens, and a
+    // window that already fills the screen cannot grow for the page.
+    const int screenWidth = window.screen()->availableGeometry().width();
+    window.resize(qMin(1400, screenWidth - 100), 600);
     window.show();
     QVERIFY(QTest::qWaitForWindowExposed(&window));
     // At its minimum width, the window leaves no spare width for the book.
@@ -2395,8 +2400,16 @@ void TestDockLayoutUi::lone_formula_book_opens_wide_enough_for_page()
     QTextBrowser* browser = dock->findChild<QTextBrowser*>();
     QVERIFY(browser != nullptr);
     const int availableWidth = window.screen()->availableGeometry().width();
-    QTRY_VERIFY(browser->horizontalScrollBar()->maximum() == 0
-                || window.frameGeometry().width() >= availableWidth);
+    QTRY_VERIFY2(browser->horizontalScrollBar()->maximum() == 0
+                     || window.frameGeometry().width() >= availableWidth,
+                 qPrintable(QStringLiteral("scroll=%1 viewport=%2 dock=%3 window=%4x%5 frame=%6 available=%7")
+                                .arg(browser->horizontalScrollBar()->maximum())
+                                .arg(browser->viewport()->width())
+                                .arg(dock->width())
+                                .arg(window.width())
+                                .arg(window.height())
+                                .arg(window.frameGeometry().width())
+                                .arg(availableWidth)));
 }
 
 void TestDockLayoutUi::kept_window_size_handles_native_resize_requests_data()
@@ -2517,6 +2530,71 @@ void TestDockLayoutUi::shown_dock_keeps_window_size_from_window_system()
     QTRY_COMPARE(window.size(), userSize);
     QTest::qWait(50);
     QCOMPARE(window.size(), userSize);
+}
+
+void TestDockLayoutUi::fitted_and_kept_dock_widths_apply_at_once()
+{
+    MainWindowStateGuard guard;
+    Settings* settings = guard.settings;
+    settings->sessionLayoutJson.clear();
+    settings->windowState.clear();
+    settings->windowGeometry.clear();
+    settings->constantsDockVisible = false;
+    settings->functionsDockVisible = false;
+    settings->historyDockVisible = false;
+    settings->formulaBookDockVisible = false;
+    settings->formulaBookActivePage.clear();
+    settings->variablesDockVisible = false;
+    settings->userFunctionsDockVisible = false;
+    settings->userUnitsDockVisible = false;
+    settings->bitfieldVisible = false;
+    settings->keypadVisible = false;
+
+    MainWindow window;
+    const int screenWidth = window.screen()->availableGeometry().width();
+    window.resize(qMin(1400, screenWidth - 100), 600);
+    window.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&window));
+    window.setFormulaBookDockVisible(true, false);
+    QDockWidget* dock = window.findChild<QDockWidget*>(QStringLiteral("BookDock"));
+    QVERIFY(dock != nullptr);
+    QTextBrowser* browser = dock->findChild<QTextBrowser*>();
+    QVERIFY(browser != nullptr);
+    // The book is too narrow for its page.
+    window.resizeDocks({dock}, {dock->minimumSizeHint().width()}, Qt::Horizontal);
+    QTRY_VERIFY(browser->horizontalScrollBar()->maximum() > 0);
+    // The window has room for the page, also on a small screen.
+    const int roomyWidth = window.minimumSizeHint().width()
+        + browser->horizontalScrollBar()->maximum() + 100;
+    if (window.width() < roomyWidth) {
+        window.resize(roomyWidth, window.height());
+        QTRY_COMPARE(window.width(), roomyWidth);
+    }
+    QVERIFY(browser->horizontalScrollBar()->maximum() > 0);
+    const int narrowWidth = dock->width();
+
+    // On Wayland, an older window size can arrive before the next layout pass.
+    // The window then keeps the dock sizes of that moment and restores them
+    // with the kept window size. So the last fit step must widen the book at
+    // once. Run only that step, without the layout pass after it.
+    window.fitDockToColumns(dock, window.dockWidgetArea(dock),
+                            MainWindow::DockFitStep::FinalResizeDock);
+    QCoreApplication::sendPostedEvents(&window, QEvent::MetaCall);
+    QCOMPARE(browser->horizontalScrollBar()->maximum(), 0);
+
+    // Restored dock widths also apply at once, in case another older size
+    // follows.
+    const int fittedWidth = dock->width();
+    QVERIFY(fittedWidth > narrowWidth);
+    // Do not run the event loop here: a size from the window system would
+    // make the window remember the dock sizes again.
+    window.rememberKeptDockSizes();
+    window.resizeDocks({dock}, {narrowWidth}, Qt::Horizontal);
+    window.applyPendingDockSizes();
+    QVERIFY(dock->width() < fittedWidth);
+    window.restoreKeptDockSizes();
+    QCOMPARE(dock->width(), fittedWidth);
+    QCOMPARE(browser->horizontalScrollBar()->maximum(), 0);
 }
 
 void TestDockLayoutUi::view_dock_menu_tracks_and_changes_only_active_window()
