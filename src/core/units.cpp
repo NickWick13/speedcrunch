@@ -44,6 +44,12 @@
 
     - Source #5:
         https://qudt.org/vocab/unit/
+
+    - Source #6:
+        The International System of Units - 8th edition (2006)
+        Bureau International des Poids et Mesures
+        Table 9: Non-SI units associated with the CGS and the CGS-Gaussian
+        system of units
 */
 
 namespace UnitText {
@@ -192,6 +198,16 @@ namespace UnitName {
     inline const QString YearJulian = QStringLiteral("year_julian");
     inline const QString YearSidereal = QStringLiteral("year_sidereal");
     inline const QString YearTropical = QStringLiteral("year_tropical");
+    inline const QString Dyne = QStringLiteral("dyne");
+    inline const QString Erg = QStringLiteral("erg");
+    inline const QString Barye = QStringLiteral("barye");
+    inline const QString Poise = QStringLiteral("poise");
+    inline const QString Stokes = QStringLiteral("stokes");
+    // The unit is the gal. Its long name avoids a mix-up with gallons.
+    inline const QString Galileo = QStringLiteral("galileo");
+    inline const QString Gauss = QStringLiteral("gauss");
+    inline const QString Maxwell = QStringLiteral("maxwell");
+    inline const QString Oersted = QStringLiteral("oersted");
 } // namespace UnitName
 
 namespace UnitSymbol {
@@ -332,6 +348,15 @@ namespace UnitSymbol {
     inline const QString YearJulian = QStringLiteral("a_jul");
     inline const QString YearSidereal = QStringLiteral("a_sid");
     inline const QString YearTropical = QStringLiteral("a_trop");
+    inline const QString Dyne = QStringLiteral("dyn");
+    inline const QString Erg = QStringLiteral("erg");
+    inline const QString Barye = QStringLiteral("Ba");
+    inline const QString Poise = QStringLiteral("P");
+    inline const QString Stokes = QStringLiteral("St");
+    inline const QString Galileo = QStringLiteral("Gal");
+    inline const QString Gauss = QStringLiteral("G");
+    inline const QString Maxwell = QStringLiteral("Mx");
+    inline const QString Oersted = QStringLiteral("Oe");
 } // namespace UnitSymbol
 
 namespace UnitAltSymbol {
@@ -491,6 +516,9 @@ QString applySuperscriptStyleToUnitName(QString unitName)
         SiBase,
         SiDerived,
         SiAccepted,
+        // CGS units are only shown when the user asks for them. They are
+        // never picked automatically for a result.
+        Cgs,
         Other
     };
 
@@ -522,6 +550,9 @@ QString applySuperscriptStyleToUnitName(QString unitName)
         int prefixPolicy;
         const Quantity (*linearValue)();
         AffineDefinition affine = {};
+        // The symbol only matches with its exact case. Case-folded lookups
+        // keep resolving to the older unit (g is gram, st is stone).
+        bool exactCaseSymbol = false;
     };
 
     using PrefixSpec = UnitPrefixSpec;
@@ -679,6 +710,16 @@ const QHash<UnitId, UnitSpec>& s_unitSpecs()
         {UnitId::YearJulian, UnitSpec{UnitName::YearJulian, QT_TRANSLATE_NOOP("Editor", "Julian year"), UnitSymbol::YearJulian, {}, UnitFamily::Other, {UnitQuantity::Time}, NoPrefixes, &Units::julian_year}},
         {UnitId::YearSidereal, UnitSpec{UnitName::YearSidereal, QT_TRANSLATE_NOOP("Editor", "sidereal year"), UnitSymbol::YearSidereal, {}, UnitFamily::Other, {UnitQuantity::Time}, NoPrefixes, &Units::sidereal_year}},
         {UnitId::YearTropical, UnitSpec{UnitName::YearTropical, QT_TRANSLATE_NOOP("Editor", "tropical year"), UnitSymbol::YearTropical, {}, UnitFamily::Other, {UnitQuantity::Time}, NoPrefixes, &Units::tropical_year}},
+        // CGS units (Source #6). Magnetic units use the usual SI values.
+        {UnitId::Dyne, UnitSpec{UnitName::Dyne, QT_TRANSLATE_NOOP("Editor", "dyne"), UnitSymbol::Dyne, {}, UnitFamily::Cgs, {UnitQuantity::Force}, NoPrefixes, &Units::dyne}},
+        {UnitId::Erg, UnitSpec{UnitName::Erg, QT_TRANSLATE_NOOP("Editor", "erg"), UnitSymbol::Erg, {}, UnitFamily::Cgs, {UnitQuantity::Energy, UnitQuantity::Work}, NoPrefixes, &Units::erg}},
+        {UnitId::Barye, UnitSpec{UnitName::Barye, QT_TRANSLATE_NOOP("Editor", "barye"), UnitSymbol::Barye, {}, UnitFamily::Cgs, {UnitQuantity::Pressure, UnitQuantity::Stress}, NoPrefixes, &Units::barye}},
+        {UnitId::Poise, UnitSpec{UnitName::Poise, QT_TRANSLATE_NOOP("Editor", "poise"), UnitSymbol::Poise, {}, UnitFamily::Cgs, {UnitQuantity::DynamicViscosity}, SmallNegativeSiPrefixes, &Units::poise}},
+        {UnitId::Stokes, UnitSpec{UnitName::Stokes, QT_TRANSLATE_NOOP("Editor", "stokes"), UnitSymbol::Stokes, {}, UnitFamily::Cgs, {UnitQuantity::KinematicViscosity}, SmallNegativeSiPrefixes, &Units::stokes, {}, true}},
+        {UnitId::Galileo, UnitSpec{UnitName::Galileo, QT_TRANSLATE_NOOP("Editor", "gal"), UnitSymbol::Galileo, {}, UnitFamily::Cgs, {UnitQuantity::Acceleration}, NegativeEngineeringSiPrefixes, &Units::galileo}},
+        {UnitId::Gauss, UnitSpec{UnitName::Gauss, QT_TRANSLATE_NOOP("Editor", "gauss"), UnitSymbol::Gauss, {}, UnitFamily::Cgs, {UnitQuantity::MagneticFluxDensity}, EngineeringSiPrefixes, &Units::gauss, {}, true}},
+        {UnitId::Maxwell, UnitSpec{UnitName::Maxwell, QT_TRANSLATE_NOOP("Editor", "maxwell"), UnitSymbol::Maxwell, {}, UnitFamily::Cgs, {UnitQuantity::MagneticFlux}, NoPrefixes, &Units::maxwell}},
+        {UnitId::Oersted, UnitSpec{UnitName::Oersted, QT_TRANSLATE_NOOP("Editor", "oersted"), UnitSymbol::Oersted, {}, UnitFamily::Cgs, {UnitQuantity::MagneticFieldStrength}, PositiveEngineeringSiPrefixes, &Units::oersted}},
     };
     return specs;
 }
@@ -1215,7 +1256,7 @@ QString unitLocalizedIdentifierName(const QString& identifier)
     if (it != s_unitRegistry().localizedByIdentifier.constEnd())
         return it.value();
 
-    const UnitId id = unitId(normalizeUnitName(identifier));
+    const UnitId id = unitIdForName(identifier);
     return id == UnitId::Unknown ? QString() : QString::fromUtf8(unitLocalizedName(id));
 }
 
@@ -1405,7 +1446,8 @@ UnitId unitId(const QString& name)
         const QHash<UnitId, UnitSpec>& specs = s_unitSpecs();
         for (const UnitId id : s_unitSpecOrder()) {
             const UnitSpec& spec = specs.value(id);
-            if (!spec.symbol.isEmpty()) {
+            // Exact-case symbols are resolved by unitIdForName() only.
+            if (!spec.symbol.isEmpty() && !spec.exactCaseSymbol) {
                 const QString normalizedSymbol = normalizeUnitName(spec.symbol);
                 normalizedSymbolUseCount.insert(
                     normalizedSymbol,
@@ -1421,7 +1463,7 @@ UnitId unitId(const QString& name)
         for (const UnitId id : s_unitSpecOrder()) {
             const UnitSpec& spec = specs.value(id);
             insertIfMissing(normalizeUnitName(spec.name), id);
-            if (!spec.symbol.isEmpty()) {
+            if (!spec.symbol.isEmpty() && !spec.exactCaseSymbol) {
                 const QString normalizedSymbol = normalizeUnitName(spec.symbol);
                 if (normalizedSymbolUseCount.value(normalizedSymbol) == 1)
                     insertIfMissing(normalizedSymbol, id);
@@ -1435,6 +1477,40 @@ UnitId unitId(const QString& name)
         return map;
     }();
     return byName.value(name, UnitId::Unknown);
+}
+
+UnitId unitIdForName(const QString& name)
+{
+    static const QHash<QString, UnitId> exactCaseSymbols = [] {
+        QHash<QString, UnitId> map;
+        const QHash<UnitId, UnitSpec>& specs = s_unitSpecs();
+        for (const UnitId id : s_unitSpecOrder()) {
+            const UnitSpec& spec = specs.value(id);
+            if (spec.exactCaseSymbol && !spec.symbol.isEmpty())
+                map.insert(spec.symbol, id);
+        }
+        return map;
+    }();
+
+    // Same trimming and parenthesis handling as normalizeUnitName(), but
+    // without case folding.
+    QString text = name.trimmed();
+    if (text.startsWith(MathDsl::GroupStart)
+        && text.endsWith(MathDsl::GroupEnd)
+        && text.size() > 2)
+        text = text.mid(1, text.size() - 2).trimmed();
+    const auto it = exactCaseSymbols.constFind(text);
+    if (it != exactCaseSymbols.constEnd())
+        return it.value();
+
+    // A prefixed identifier never names a base unit. Without this check,
+    // case folding would read kG (kilogauss) as kg.
+    const auto& definitions = s_unitRegistry().definitionsByIdentifier;
+    const auto definition = definitions.constFind(text);
+    if (definition != definitions.constEnd() && definition.value().prefix)
+        return UnitId::Unknown;
+
+    return unitId(normalizeUnitName(name));
 }
 
 template <typename Builder>
@@ -1739,6 +1815,9 @@ void Units::findUnit(Quantity& q)
             const UnitSpec& spec = specs.value(id);
             if (spec.prefixPolicy == NoPrefixes || !spec.linearValue || spec.affine.toBase)
                 continue;
+            // CGS units appear only when the user asks for them.
+            if (spec.family == UnitFamily::Cgs)
+                continue;
 
             Quantity baseUnitValue = spec.linearValue();
             baseUnitValue.cleanDimension();
@@ -2004,7 +2083,7 @@ void Units::findUnit(Quantity& q)
             return d == 1 ? n : (n + d);
         };
         const auto factorPenalty = [exponentComplexity](const UnitFactor& factor) {
-            const UnitId factorId = unitId(normalizeUnitName(factor.name));
+            const UnitId factorId = unitIdForName(factor.name);
             const auto specIt = s_unitSpecs().constFind(factorId);
             const bool isBase =
                 specIt != s_unitSpecs().constEnd()
@@ -2766,6 +2845,17 @@ DEFINE_DERIVED_UNIT(revolution_per_minute, Units::revolution() / Units::minute()
 DEFINE_DERIVED_UNIT(horsepower, HNumber(550) * Units::foot() * Units::pound() * Units::gravity() / Units::second()) // Imperial horsepower.
 DEFINE_DERIVED_UNIT(kilowatt_hour, Units::kilo() * Units::watt() * Units::hour())
 DEFINE_DERIVED_UNIT(millimetre_of_mercury, HNumber("133.322387415") * Units::pascal())
+
+// CGS units (Source #6). Gauss, maxwell and oersted use the usual SI values.
+DEFINE_DERIVED_UNIT(dyne, HNumber("1e-5") * Units::newton())
+DEFINE_DERIVED_UNIT(erg, HNumber("1e-7") * Units::joule())
+DEFINE_DERIVED_UNIT(barye, HNumber("0.1") * Units::pascal())
+DEFINE_DERIVED_UNIT(poise, HNumber("0.1") * Units::pascal() * Units::second())
+DEFINE_DERIVED_UNIT(stokes, HNumber("1e-4") * Units::square_metre() / Units::second())
+DEFINE_DERIVED_UNIT(galileo, HNumber("0.01") * Units::metre() / (Units::second()*Units::second()))
+DEFINE_DERIVED_UNIT(gauss, HNumber("1e-4") * Units::tesla())
+DEFINE_DERIVED_UNIT(maxwell, HNumber("1e-8") * Units::weber())
+DEFINE_DERIVED_UNIT(oersted, HNumber(1000) / (HNumber(4) * HMath::pi()) * Units::ampere() / Units::metre())
 
 #define SI_PREFIX_CACHE(id, func, name, symbol, exponent) \
     DEFINE_DERIVED_UNIT(func, s_powerOfTen(exponent))

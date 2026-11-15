@@ -2279,7 +2279,7 @@ void Editor::autoComplete(const QString& item)
             newTokenText = preferredShortUnitText;
         }
         const UnitId completedUnitId =
-            unitId(normalizeUnitName(UnicodeChars::normalizeUnitSymbolAliases(newTokenText)));
+            unitIdForName(UnicodeChars::normalizeUnitSymbolAliases(newTokenText));
         if (completedUnitId != UnitId::Unknown) {
             const QString symbol = unitSymbol(completedUnitId);
             if (!symbol.isEmpty())

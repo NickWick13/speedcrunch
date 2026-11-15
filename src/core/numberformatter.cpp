@@ -43,8 +43,7 @@ void useUnprefixedSiUnitForScientificDisplay(Quantity* quantity)
         return;
 
     const auto baseIdForDisplayUnit = [](const QString& unitName) {
-        const QString normalized = normalizeUnitName(unitName);
-        const UnitId directId = unitId(normalized);
+        const UnitId directId = unitIdForName(unitName);
         if (directId != UnitId::Unknown)
             return directId;
 
@@ -52,16 +51,42 @@ void useUnprefixedSiUnitForScientificDisplay(Quantity* quantity)
             QString text;
             UnitPrefixSpec spec;
         };
-        QList<PrefixText> prefixes;
-        for (const UnitPrefixSpec& prefix : siPrefixes()) {
-            prefixes.append(PrefixText{normalizeUnitName(prefix.symbol), prefix});
-            prefixes.append(PrefixText{normalizeUnitName(prefix.longName), prefix});
-        }
-        std::sort(prefixes.begin(), prefixes.end(), [](const PrefixText& a, const PrefixText& b) {
-            return a.text.size() > b.text.size();
-        });
+        const auto sortedPrefixes = [](bool foldCase) {
+            QList<PrefixText> prefixes;
+            for (const UnitPrefixSpec& prefix : siPrefixes()) {
+                const QString symbol = foldCase ? normalizeUnitName(prefix.symbol) : prefix.symbol;
+                const QString longName = foldCase ? normalizeUnitName(prefix.longName) : prefix.longName;
+                prefixes.append(PrefixText{symbol, prefix});
+                prefixes.append(PrefixText{longName, prefix});
+            }
+            std::sort(prefixes.begin(), prefixes.end(), [](const PrefixText& a, const PrefixText& b) {
+                return a.text.size() > b.text.size();
+            });
+            return prefixes;
+        };
 
-        for (const PrefixText& prefix : prefixes) {
+        // Match the exact case first, so mG stays milligauss and does not
+        // become milligram. The case-folded pass below keeps older behavior.
+        const QString exact = unitName.trimmed();
+        for (const PrefixText& prefix : sortedPrefixes(false)) {
+            if (prefix.text.isEmpty()
+                || !exact.startsWith(prefix.text)
+                || exact.size() == prefix.text.size())
+            {
+                continue;
+            }
+
+            const UnitId baseId = unitIdForName(exact.mid(prefix.text.size()));
+            const int policy = unitPrefixPolicy(baseId);
+            if ((policy & AllDecimalSiPrefixes)
+                && unitPrefixPolicyAllows(policy, prefix.spec))
+            {
+                return baseId;
+            }
+        }
+
+        const QString normalized = normalizeUnitName(unitName);
+        for (const PrefixText& prefix : sortedPrefixes(true)) {
             if (prefix.text.isEmpty()
                 || !normalized.startsWith(prefix.text)
                 || normalized.size() == prefix.text.size())

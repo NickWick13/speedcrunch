@@ -20,6 +20,19 @@ Absorbed Dose
      - ``Gy``
      - ``—``
 
+Acceleration
+^^^^^^^^^^^^
+
+.. list-table::
+   :header-rows: 1
+
+   * - Canonical name
+     - Symbol
+     - Symbol aliases
+   * - ``galileo``
+     - ``Gal``
+     - ``—``
+
 Activity Referred To A Radionuclide
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -147,6 +160,19 @@ Dose Equivalent
      - ``Sv``
      - ``—``
 
+Dynamic Viscosity
+^^^^^^^^^^^^^^^^^
+
+.. list-table::
+   :header-rows: 1
+
+   * - Canonical name
+     - Symbol
+     - Symbol aliases
+   * - ``poise``
+     - ``P``
+     - ``—``
+
 Electric
 ^^^^^^^^
 
@@ -184,6 +210,9 @@ Energy
    * - ``electronvolt``
      - ``eV``
      - ``—``
+   * - ``erg``
+     - ``erg``
+     - ``—``
    * - ``hartree_energy_unit``
      - ``Eh``
      - ``—``
@@ -203,6 +232,9 @@ Force
    * - Canonical name
      - Symbol
      - Symbol aliases
+   * - ``dyne``
+     - ``dyn``
+     - ``—``
    * - ``newton``
      - ``N``
      - ``—``
@@ -282,6 +314,19 @@ Kerma
      - Symbol aliases
    * - ``gray``
      - ``Gy``
+     - ``—``
+
+Kinematic Viscosity
+^^^^^^^^^^^^^^^^^^^
+
+.. list-table::
+   :header-rows: 1
+
+   * - Canonical name
+     - Symbol
+     - Symbol aliases
+   * - ``stokes``
+     - ``St``
      - ``—``
 
 Length
@@ -365,6 +410,19 @@ Luminous Intensity
      - ``cd``
      - ``—``
 
+Magnetic Field Strength
+^^^^^^^^^^^^^^^^^^^^^^^
+
+.. list-table::
+   :header-rows: 1
+
+   * - Canonical name
+     - Symbol
+     - Symbol aliases
+   * - ``oersted``
+     - ``Oe``
+     - ``—``
+
 Magnetic Flux
 ^^^^^^^^^^^^^
 
@@ -374,6 +432,9 @@ Magnetic Flux
    * - Canonical name
      - Symbol
      - Symbol aliases
+   * - ``maxwell``
+     - ``Mx``
+     - ``—``
    * - ``weber``
      - ``Wb``
      - ``—``
@@ -387,6 +448,9 @@ Magnetic Flux Density
    * - Canonical name
      - Symbol
      - Symbol aliases
+   * - ``gauss``
+     - ``G``
+     - ``—``
    * - ``tesla``
      - ``T``
      - ``—``
@@ -508,6 +572,9 @@ Pressure
    * - ``bar``
      - ``bar``
      - ``—``
+   * - ``barye``
+     - ``Ba``
+     - ``—``
    * - ``millimetre_of_mercury``
      - ``mmHg``
      - ``—``
@@ -575,6 +642,9 @@ Stress
    * - Canonical name
      - Symbol
      - Symbol aliases
+   * - ``barye``
+     - ``Ba``
+     - ``—``
    * - ``pascal``
      - ``Pa``
      - ``—``
@@ -781,6 +851,9 @@ Work
    * - Canonical name
      - Symbol
      - Symbol aliases
+   * - ``erg``
+     - ``erg``
+     - ``—``
    * - ``joule``
      - ``J``
      - ``—``

@@ -249,6 +249,9 @@ Built-in short forms include:
 * Angle: ``deg`` (``degree``), ``gon`` (``gradian``).
 * Information: ``b`` (``bit``), ``B`` (``byte``).
 * Other common aliases: ``u``/``Da`` (``atomic_mass_unit``), ``nmi`` (``nautical_mile``).
+* CGS: ``dyn`` (``dyne``), ``Ba`` (``barye``), ``P`` (``poise``),
+  ``St`` (``stokes``), ``Gal`` (``galileo``), ``G`` (``gauss``),
+  ``Mx`` (``maxwell``), ``Oe`` (``oersted``).
 
 For units that allow prefixes, the same short forms can be used in prefixed
 form as well (for example ``kpc``, ``Mpc``, ``MB``, ``kb``).

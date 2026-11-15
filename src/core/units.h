@@ -56,7 +56,11 @@ enum class UnitQuantity {
     Volume,
     Speed,
     Velocity,
-    DimensionlessRatio
+    DimensionlessRatio,
+    Acceleration,
+    DynamicViscosity,
+    KinematicViscosity,
+    MagneticFieldStrength
 };
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 8, 0)
@@ -209,7 +213,17 @@ enum class UnitId {
     CenturyJulian,
     YearJulian,
     YearSidereal,
-    YearTropical
+    YearTropical,
+    // CGS units. Keep new ids at the end: spec order follows enum order.
+    Dyne,
+    Erg,
+    Barye,
+    Poise,
+    Stokes,
+    Galileo,
+    Gauss,
+    Maxwell,
+    Oersted
 };
 
 enum class UnitPhraseId {
@@ -264,6 +278,11 @@ QString unitQuantityDimensionKey(UnitQuantity quantity);
 bool unitQuantityFromDimensionKey(const QString& key, UnitQuantity* out);
 QString normalizeUnitName(const QString& name);
 UnitId unitId(const QString& normalizedName);
+// Resolves a unit name as written, keeping its case: G is gauss and g is
+// gram, St is stokes and st is stone. Prefixed identifiers such as kG or fT
+// do not name a base unit, so they give Unknown. Other names resolve like
+// unitId(normalizeUnitName(name)).
+UnitId unitIdForName(const QString& name);
 QString unitName(UnitId id);
 const char* unitLocalizedName(UnitId id);
 QString unitLocalizedIdentifierName(const QString& identifier);
@@ -572,6 +591,16 @@ public:
     static const Quantity stone();
     static const Quantity dessert_spoon();
     static const Quantity quad();
+    // CGS units.
+    static const Quantity dyne();
+    static const Quantity erg();
+    static const Quantity barye();
+    static const Quantity poise();
+    static const Quantity stokes();
+    static const Quantity galileo();
+    static const Quantity gauss();
+    static const Quantity maxwell();
+    static const Quantity oersted();
 
 private:
     static void pushUnit(Quantity q, QString name);

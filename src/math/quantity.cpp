@@ -46,7 +46,7 @@ enum class InformationUnitFamily {
 
 SemanticUnitKind semanticUnitKind(const QString& unitName)
 {
-    switch (unitId(normalizeUnitName(unitName))) {
+    switch (unitIdForName(unitName)) {
     case UnitId::Hertz:
         return SemanticUnitKind::Frequency;
     case UnitId::Becquerel:
@@ -79,7 +79,7 @@ InformationUnitFamily informationUnitFamily(const QString& unitName)
 
 bool isSteradianUnitName(const QString& unitName)
 {
-    return unitId(normalizeUnitName(unitName)) == UnitId::Steradian;
+    return unitIdForName(unitName) == UnitId::Steradian;
 }
 
 bool tryBestSiPrefixForScaledDisplayUnit(const Quantity& source,
@@ -97,7 +97,7 @@ bool tryBestSiPrefixForScaledDisplayUnit(const Quantity& source,
     if (Units::isExplicitAngleUnitName(source.unitName()))
         return false;
 
-    const UnitId id = unitId(normalizeUnitName(source.unitName()));
+    const UnitId id = unitIdForName(source.unitName());
     const int policy = unitPrefixPolicy(id);
     if (!(policy & AllDecimalSiPrefixes))
         return false;
@@ -1900,8 +1900,8 @@ Quantity Quantity::operator*(const Quantity& other) const
     if (!result.hasUnit()) {
         const QString n1 = normalizeUnitName(this->unitName());
         const QString n2 = normalizeUnitName(other.unitName());
-        const UnitId u1 = unitId(n1);
-        const UnitId u2 = unitId(n2);
+        const UnitId u1 = unitIdForName(this->unitName());
+        const UnitId u2 = unitIdForName(other.unitName());
         const bool hasExplicitAngleFactorOperand =
             unitTextContainsExplicitAngleFactor(this->unitName())
             || unitTextContainsExplicitAngleFactor(other.unitName());
@@ -2271,8 +2271,7 @@ Quantity Quantity::operator/(const Quantity& other) const
         }
         result.cleanDimension();
 
-        const QString n1 = normalizeUnitName(this->unitName());
-        const UnitId u1 = unitId(n1);
+        const UnitId u1 = unitIdForName(this->unitName());
         // Keep user-intended energy-per-geometry forms in their original domain
         // unless conversion is explicitly requested, to avoid context loss:
         // J/m² (energy/area) vs N/m (force/length), and
@@ -2344,7 +2343,7 @@ Quantity Quantity::operator/(const Quantity& other) const
                 }
             }
             const UnitId canonicalId =
-                unitId(normalizeUnitName(canonical.unitName()));
+                unitIdForName(canonical.unitName());
             if (isPreferredCanonicalDisplayUnit(canonicalId)
                 || isPureTimeQuantity(result))
             {

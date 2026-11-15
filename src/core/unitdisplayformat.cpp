@@ -38,7 +38,7 @@ QString shortNameForIdentifier(const QString& identifier)
     auto cached = cache.constFind(identifier);
     if (cached == cache.constEnd()) {
         QString symbol;
-        const UnitId id = unitId(normalizeUnitName(identifier));
+        const UnitId id = unitIdForName(identifier);
         Quantity value;
         if (id != UnitId::Unknown && Units::tryGetBuiltInUnitValue(identifier, &value)) {
             // Case folding can confuse symbols such as kT with kt, or fT
@@ -67,7 +67,7 @@ QString compositeAngleAlias(UnitId id)
 
 UnitId unitIdForDisplayTokenBase(const QString& tokenBase)
 {
-    const UnitId id = unitId(normalizeUnitName(tokenBase));
+    const UnitId id = unitIdForName(tokenBase);
     if (id != UnitId::Unknown)
         return id;
 

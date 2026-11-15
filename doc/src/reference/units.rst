@@ -131,6 +131,35 @@ exponent can be reused in unit expressions. For example,
 ``1 × 10⁻¹²[s]`` is interpreted like ``1e-12[s]`` and displays as ``1 ps``.
 
 
+CGS Units
+---------
+
+SpeedCrunch includes common units of the centimetre–gram–second (CGS)
+system: ``dyn`` (dyne), ``erg``, ``Ba`` (barye), ``P`` (poise), ``St``
+(stokes), ``Gal`` (gal), ``G`` (gauss), ``Mx`` (maxwell) and ``Oe``
+(oersted). Common prefixed forms also work, such as ``cP``, ``cSt``,
+``mGal``, ``kG``, ``µG`` and ``kOe``.
+
+* ``[dyn] -> [N]`` gives ``0.00001 N``
+* ``1[dyn] * 1[cm] -> [erg]`` gives ``1 erg``
+* ``[cSt] -> [mm^2/s]`` gives ``1 mm²⋅s⁻¹``
+* ``1[T] -> [G]`` gives ``10000 G``
+* ``1[erg] / 1[G] -> [J/T]`` gives ``0.001 J⋅T⁻¹``
+
+Gauss, maxwell and oersted use their usual SI values: 1 G = 10⁻⁴ T,
+1 Mx = 10⁻⁸ Wb and 1 Oe = 1000/(4π) A/m. So they work together with SI
+units and constants. Formulas in Gaussian form, such as Coulomb's law
+without ε₀, are not supported, and electrostatic CGS units such as the
+statcoulomb are not included.
+
+SpeedCrunch shows a CGS unit only when you use it. It never picks one by
+itself for a result: ``0.00005[T]`` still displays as ``50 µT``.
+
+Unit symbols are case-sensitive. ``G`` is gauss and ``g`` is gram, ``St`` is
+stokes and ``st`` is stone. The long name of the gal is ``galileo``, and
+there is no lowercase ``gal``, so it cannot be mistaken for a gallon.
+
+
 Composed Units
 --------------
 

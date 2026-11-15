@@ -1962,6 +1962,101 @@ void test_unit_cancellation_and_duration_display()
     eval->initializeBuiltInVariables();
 }
 
+void test_units_cgs()
+{
+    // Mechanical CGS units are exact multiples of SI units.
+    CHECK_EVAL("[dyn] -> [N]", "0.00001 N");
+    CHECK_EVAL("[dyne] -> [dyn]", "1 dyn");
+    CHECK_EVAL("[erg] -> [J]", "0.0000001 J");
+    CHECK_EVAL("1[dyn] * 1[cm] -> [erg]", "1 erg");
+    CHECK_EVAL("[Ba] -> [Pa]", "0.1 Pa");
+    CHECK_EVAL("1[dyn] / 1[cm^2] -> [Ba]", "1 Ba");
+    CHECK_EVAL("[P] -> [Pa*s]", "0.1 Pa*s");
+    CHECK_EVAL("[cP] -> [mPa*s]", "1 mPa*s");
+    CHECK_EVAL("[St] -> [cm^2/s]", u8"1 cm²·s⁻¹");
+    CHECK_EVAL("[cSt] -> [mm^2/s]", u8"1 mm²·s⁻¹");
+    CHECK_EVAL("[Gal] -> [cm/s^2]", u8"1 cm·s⁻²");
+    CHECK_EVAL("[mGal] -> [Gal]", "0.001 Gal");
+    CHECK_EVAL("9.80665[m/s^2] -> [Gal]", "980.665 Gal");
+
+    // Gauss, maxwell and oersted use the usual SI values.
+    CHECK_EVAL("[G] -> [T]", "0.0001 T");
+    CHECK_EVAL("[kG] -> [T]", "0.1 T");
+    CHECK_EVAL("1[T] -> [G]", "10000 G");
+    CHECK_EVAL(QString::fromUtf8("50[µT] -> [mG]"), "500 mG");
+    CHECK_EVAL(QString::fromUtf8("[µG] -> [nT]"), "0.1 nT");
+    CHECK_EVAL("[kOe] -> [Oe]", "1000 Oe");
+    CHECK_EVAL("[Mx] -> [Wb]", "0.00000001 Wb");
+    CHECK_EVAL("1[G] * 1[cm^2] -> [Mx]", "1 Mx");
+    CHECK_EVAL("[Oe] -> [A/m]", u8"79.57747154594766788444 A·m⁻¹");
+    CHECK_EVAL("1000[A/m] -> [Oe]", "12.56637061435917295385 Oe");
+    // A magnetic moment of 1 erg/G (often written as 1 emu) is 0.001 J/T.
+    CHECK_EVAL("1[erg] / 1[G] -> [J/T]", u8"0.001 J·T⁻¹");
+
+    // Case matters: G is gauss and g is gram, St is stokes and st is stone.
+    CHECK_EVAL("[g] -> [gram]", "1 gram");
+    CHECK_EVAL("[G] -> [gauss]", "1 gauss");
+    CHECK_EVAL("[kG] -> [kilogauss]", "1 kilogauss");
+    CHECK_EVAL("[kg] -> [kilogram]", "1 kilogram");
+    CHECK_EVAL("[St] -> [stokes]", "1 stokes");
+    CHECK_EVAL("[st] -> [stone]", "1 stone");
+    CHECK_EVAL("[Gal] -> [galileo]", "1 galileo");
+    CHECK_EVAL_FAIL("[G] -> [g]");
+    CHECK_EVAL_FAIL("[kG] -> [kg]");
+    CHECK_EVAL_FAIL("[St] -> [st]");
+    // There is no lowercase gal, so it cannot be mistaken for a gallon.
+    CHECK_EVAL_FAIL("[gal]");
+
+    // Results keep the CGS unit the user wrote.
+    CHECK_EVAL_FORMAT("2[G]", "2[G]");
+    CHECK_EVAL_FORMAT("2[kG]", "2[kG]");
+    CHECK_EVAL_FORMAT("3[St]", "3[St]");
+    CHECK_EVAL_FORMAT("3[st]", "3[st]");
+    CHECK_EVAL_FORMAT("0.001 * 1[g]", "1[mg]");
+    CHECK_EVAL_FORMAT("0.001 * 1[G]", "1[mG]");
+    const QString quantitySpace(MathDsl::QuantSp);
+    CHECK_DISPLAY_INTERPRETED("1[G]", QStringLiteral("1") + quantitySpace + QStringLiteral("[G]"));
+    CHECK_DISPLAY_INTERPRETED("1[kG]", QStringLiteral("1") + quantitySpace + QStringLiteral("[kG]"));
+    CHECK_DISPLAY_INTERPRETED("1[St]", QStringLiteral("1") + quantitySpace + QStringLiteral("[St]"));
+    CHECK_DISPLAY_INTERPRETED("1[g]", QStringLiteral("1") + quantitySpace + QStringLiteral("[g]"));
+    CHECK_DISPLAY_INTERPRETED("1[st]", QStringLiteral("1") + quantitySpace + QStringLiteral("[st]"));
+    // Prefixed symbols must not fold into other units (fT is not ft).
+    CHECK_DISPLAY_INTERPRETED("1[fT]", QStringLiteral("1") + quantitySpace + QStringLiteral("[fT]"));
+    CHECK_DISPLAY_INTERPRETED("1[kT]", QStringLiteral("1") + quantitySpace + QStringLiteral("[kT]"));
+
+    // CGS units are never picked on their own for a result.
+    CHECK_EVAL_FORMAT("9.81[m]/[s]^2", u8"9.81[m·s⁻²]");
+    CHECK_EVAL_FORMAT("0.005[m/s^2]", u8"0.005[m·s⁻²]");
+    CHECK_EVAL_FORMAT("0.00005[T]", u8"50[µT]");
+    CHECK_EVAL_FORMAT("0.001[Pa]*[s]", u8"1[mPa·s]");
+    CHECK_EVAL_FORMAT("0.000001[m^2]/[s]", u8"0.000001[m²·s⁻¹]");
+    CHECK_EVAL_FORMAT("79.6[A]/[m]", u8"79.6[m⁻¹·A]");
+    CHECK_EVAL_FORMAT("1e-7[J]", "100[nJ]");
+    CHECK_EVAL_FORMAT("1e-5[N]", u8"10[µN]");
+    CHECK_EVAL_FORMAT("0.1[Pa]", "100[mPa]");
+    CHECK_EVAL_FORMAT("1e-8[Wb]", "10[nWb]");
+
+    const auto check = [](bool passed, const char* message) {
+        ++eval_total_tests;
+        if (!passed) {
+            ++eval_failed_tests;
+            ++eval_new_failed_tests;
+            cerr << "CGS unit lookup: " << message << "\t[NEW]" << endl;
+        }
+    };
+    check(unitIdForName(QStringLiteral("G")) == UnitId::Gauss, "G is gauss");
+    check(unitIdForName(QStringLiteral("g")) == UnitId::Gram, "g is gram");
+    check(unitIdForName(QStringLiteral(" (St) ")) == UnitId::Stokes, "(St) is stokes");
+    check(unitIdForName(QStringLiteral("st")) == UnitId::Stone, "st is stone");
+    check(unitIdForName(QStringLiteral("gauss")) == UnitId::Gauss, "gauss is gauss");
+    check(unitIdForName(QStringLiteral("kG")) == UnitId::Unknown, "kG is not kg");
+    check(unitIdForName(QStringLiteral("kg")) == UnitId::Kilogram, "kg is kilogram");
+    check(unitId(normalizeUnitName(QStringLiteral("g"))) == UnitId::Gram,
+          "case-folded g stays gram");
+    check(unitId(normalizeUnitName(QStringLiteral("st"))) == UnitId::Stone,
+          "case-folded st stays stone");
+}
+
 void test_units()
 {
     test_unit_cancellation_and_duration_display();
@@ -1980,6 +2075,7 @@ void test_units()
     test_units_temperature_affine_negative_values();
     test_units_grouping_and_inverse_presentation();
     test_units_preferred_derived_forms_regressions();
+    test_units_cgs();
 
     // Add/subtract must not mix a plain scalar with an explicitly unit-tagged
     // quantity, even when the unit dimension is mathematically dimensionless.
@@ -9536,6 +9632,15 @@ void test_result_display_scientific_units_use_unprefixed_si_units()
         {
             "0.0000000001234234235234 [m]",
             QString::fromUtf8("= 1.234234235234 × 10⁻¹⁰") + quantitySpace + QStringLiteral("m")
+        },
+        // mg is a gram prefix and mG a gauss prefix. They must not mix.
+        {
+            "0.002 [mg]",
+            QString::fromUtf8("= 2 × 10⁻⁶") + quantitySpace + QStringLiteral("g")
+        },
+        {
+            "0.002 [mG]",
+            QString::fromUtf8("= 2 × 10⁻⁶") + quantitySpace + QStringLiteral("G")
         }
     };
 
@@ -11456,7 +11561,7 @@ void test_unit_registry_prefix_values_and_display_units()
 {
     const auto& registered = Units::builtInUnitValues();
     const auto checkPrefixes = [&](const QList<UnitPrefixSpec>& prefixes, bool binary) {
-        for (int index = int(UnitId::Second); index <= int(UnitId::YearTropical); ++index) {
+        for (int index = int(UnitId::Second); index <= int(UnitId::Oersted); ++index) {
             const UnitId id = static_cast<UnitId>(index);
             if (id == UnitId::SquareMetre || id == UnitId::CubicMetre)
                 continue;
