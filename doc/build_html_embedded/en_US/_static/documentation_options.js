@@ -1,5 +1,5 @@
 const DOCUMENTATION_OPTIONS = {
-    VERSION: '1.2.0-rc.1',
+    VERSION: '1.2.0-rc.3',
     LANGUAGE: 'en-US',
     COLLAPSE_INDEX: false,
     BUILDER: 'qthelp',

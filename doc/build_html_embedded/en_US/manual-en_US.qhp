@@ -10,8 +10,20 @@
         <filterAttribute>manual-en_US</filterAttribute>
         <filterAttribute>1.2</filterAttribute>
         <toc>
-            <section title="SpeedCrunch 1.2.0-rc.1 documentation" ref="contents.html">
+            <section title="SpeedCrunch 1.2.0-rc.3 documentation" ref="contents.html">
                 <section title="Introduction" ref="introduction.html"/>
+                <section title="Frequently Asked Questions" ref="faq.html">
+                    <section title="General" ref="faq.html#general"/>
+                    <section title="Installation and updates" ref="faq.html#installation-and-updates"/>
+                    <section title="Basic calculations" ref="faq.html#basic-calculations"/>
+                    <section title="Results, precision and number formats" ref="faq.html#results-precision-and-number-formats"/>
+                    <section title="Variables, functions and units" ref="faq.html#variables-functions-and-units"/>
+                    <section title="Advanced math" ref="faq.html#advanced-math"/>
+                    <section title="History and sessions" ref="faq.html#history-and-sessions"/>
+                    <section title="Customizing the app" ref="faq.html#customizing-the-app"/>
+                    <section title="Tips and tricks" ref="faq.html#tips-and-tricks"/>
+                    <section title="Problems and help" ref="faq.html#problems-and-help"/>
+                </section>
                 <section title="User Guide" ref="userguide/index.html">
                     <section title="Installation" ref="userguide/installation.html">
                         <section title="Microsoft Windows" ref="userguide/installation.html#microsoft-windows"/>
@@ -330,6 +342,7 @@
         </keywords>
         <files>
             <file>contents.html</file>
+            <file>faq.html</file>
             <file>genindex.html</file>
             <file>introduction.html</file>
             <file>sc-functionindex.html</file>
