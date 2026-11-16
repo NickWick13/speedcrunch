@@ -76,8 +76,9 @@ if(WIN32)
         "SHA-1 thumbprint of the code-signing certificate (empty: use the environment, or don't sign)")
     set(SPEEDCRUNCH_SIGN_TIMESTAMP_URL "http://time.certum.pl" CACHE STRING
         "RFC 3161 timestamp server used when signing")
+    set(speedcrunch_pf86 "ProgramFiles(x86)")
     file(GLOB speedcrunch_signtool_hints LIST_DIRECTORIES true
-        "$ENV{ProgramFiles\(x86\)}/Windows Kits/10/bin/10.*/x64")
+        "$ENV{${speedcrunch_pf86}}/Windows Kits/10/bin/10.*/x64")
     list(SORT speedcrunch_signtool_hints COMPARE NATURAL ORDER DESCENDING)
     find_program(SPEEDCRUNCH_SIGNTOOL signtool HINTS ${speedcrunch_signtool_hints})
 
@@ -85,6 +86,9 @@ if(WIN32)
     set(CPACK_SPEEDCRUNCH_SIGN_TIMESTAMP_URL "${SPEEDCRUNCH_SIGN_TIMESTAMP_URL}")
     set(CPACK_SPEEDCRUNCH_SIGNTOOL "${SPEEDCRUNCH_SIGNTOOL}")
     string(TOLOWER "${APPLICATION_NAME}.exe" CPACK_SPEEDCRUNCH_APP_EXE)
+    # Written by CPackSign.cmake next to project.nsi when signing is enabled.
+    string(APPEND CPACK_NSIS_DEFINES
+        "\n!include /NONFATAL '\\\${__FILEDIR__}\\\\speedcrunch-sign.nsh'\n")
     set(CPACK_PRE_BUILD_SCRIPTS "${CMAKE_CURRENT_SOURCE_DIR}/cmake/CPackSign.cmake")
     set(CPACK_POST_BUILD_SCRIPTS "${CMAKE_CURRENT_SOURCE_DIR}/cmake/CPackSign.cmake")
 elseif(APPLE)
