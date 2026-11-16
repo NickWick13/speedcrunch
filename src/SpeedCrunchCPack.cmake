@@ -68,6 +68,25 @@ if(WIN32)
     else()
         set(CPACK_SYSTEM_NAME "windows-x86")
     endif()
+
+    # Authenticode signing of the packaged binaries and the installer. Enabled
+    # when a certificate thumbprint is set here or in the environment
+    # (SPEEDCRUNCH_SIGN_CERT_SHA1) when running cpack; see cmake/CPackSign.cmake.
+    set(SPEEDCRUNCH_SIGN_CERT_SHA1 "" CACHE STRING
+        "SHA-1 thumbprint of the code-signing certificate (empty: use the environment, or don't sign)")
+    set(SPEEDCRUNCH_SIGN_TIMESTAMP_URL "http://time.certum.pl" CACHE STRING
+        "RFC 3161 timestamp server used when signing")
+    file(GLOB speedcrunch_signtool_hints LIST_DIRECTORIES true
+        "$ENV{ProgramFiles\(x86\)}/Windows Kits/10/bin/10.*/x64")
+    list(SORT speedcrunch_signtool_hints COMPARE NATURAL ORDER DESCENDING)
+    find_program(SPEEDCRUNCH_SIGNTOOL signtool HINTS ${speedcrunch_signtool_hints})
+
+    set(CPACK_SPEEDCRUNCH_SIGN_CERT_SHA1 "${SPEEDCRUNCH_SIGN_CERT_SHA1}")
+    set(CPACK_SPEEDCRUNCH_SIGN_TIMESTAMP_URL "${SPEEDCRUNCH_SIGN_TIMESTAMP_URL}")
+    set(CPACK_SPEEDCRUNCH_SIGNTOOL "${SPEEDCRUNCH_SIGNTOOL}")
+    string(TOLOWER "${APPLICATION_NAME}.exe" CPACK_SPEEDCRUNCH_APP_EXE)
+    set(CPACK_PRE_BUILD_SCRIPTS "${CMAKE_CURRENT_SOURCE_DIR}/cmake/CPackSign.cmake")
+    set(CPACK_POST_BUILD_SCRIPTS "${CMAKE_CURRENT_SOURCE_DIR}/cmake/CPackSign.cmake")
 elseif(APPLE)
      if(NOT CPACK_GENERATOR)
          set(CPACK_GENERATOR "DragNDrop")
