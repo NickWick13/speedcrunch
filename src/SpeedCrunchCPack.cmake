@@ -107,4 +107,8 @@ elseif(UNIX)
     set(CPACK_SYSTEM_NAME "${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}")
 endif()
 
+if(APPLE)
+    include(MacOSPackageSigning)
+endif()
+
 include(CPack)
