@@ -20,7 +20,7 @@
   <tr>
     <td width="50%">
       <a class="nav-item nav-item-0"
-         href="../contents.html">SpeedCrunch 1.2.0-rc.3 documentation</a> &#187; <a class="nav-item nav-item-1"
+         href="../contents.html">SpeedCrunch 1.2.0 documentation</a> &#187; <a class="nav-item nav-item-1"
              href="index.html">User Guide</a>
           
     </td>
@@ -132,9 +132,13 @@ readability or touch area on touchscreens. For fast and full-featured input, Spe
 <li><p><code class="docutils literal notranslate"><span class="pre">Basic</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">Scientific</span> <span class="pre">(wide)</span></code> (<strong>default</strong>)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">Scientific</span> <span class="pre">(narrow)</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Custom...</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Custom</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">Disable</span></code> (shown as <code class="docutils literal notranslate"><span class="pre">Disabled</span></code> when selected)</p></li>
 </ul>
+<p><span class="guilabel">Custom</span> selects your saved custom layout. To create or edit
+that layout, choose <span class="menuselection">Settings ‣ Edit Custom Keypad</span>.
+You can open the editor while any keypad layout is selected, even when
+the keypad is disabled.</p>
 <p><code class="docutils literal notranslate"><span class="pre">DEL</span></code> deletes the character before the cursor. Both scientific layouts
 also include <code class="docutils literal notranslate"><span class="pre">C</span></code>, which clears the expression. Custom layouts saved with
 the older <code class="docutils literal notranslate"><span class="pre">⌫</span></code> and <code class="docutils literal notranslate"><span class="pre">⌧</span></code> labels switch to these labels automatically, and
@@ -164,19 +168,31 @@ trigonometric function with its inverse.</p>
 keeps its own zoom level. The Zoom submenu is unavailable while the keypad
 is disabled.
 You can also right-click the keypad and choose <span class="menuselection">Zoom</span>.</p>
-<p><code class="docutils literal notranslate"><span class="pre">Custom...</span></code> opens a dialog where you can define the keypad matrix size (rows and columns)
-and configure each button individually. For each position in the matrix, you can set:</p>
+<p><span class="menuselection">Settings ‣ Edit Custom Keypad</span> opens a dialog where you
+can set the number of rows and columns and configure each button.
+For each position in the grid, you can set:</p>
 <ul class="simple">
 <li><p>The button label shown in the keypad</p></li>
 <li><p>The button behavior: <code class="docutils literal notranslate"><span class="pre">Insert</span> <span class="pre">text</span></code>, <code class="docutils literal notranslate"><span class="pre">Backspace</span></code>, <code class="docutils literal notranslate"><span class="pre">Clear</span> <span class="pre">expression</span></code>, or <code class="docutils literal notranslate"><span class="pre">Evaluate</span> <span class="pre">expression</span></code></p></li>
 <li><p>The text to insert (for <code class="docutils literal notranslate"><span class="pre">Insert</span> <span class="pre">text</span></code> behavior)</p></li>
 </ul>
-<p>The dialog also includes a <code class="docutils literal notranslate"><span class="pre">Copy</span> <span class="pre">preset</span></code> selector with an <span class="guilabel">Apply</span> button,
-so you can start from the <code class="docutils literal notranslate"><span class="pre">Basic</span></code>, <code class="docutils literal notranslate"><span class="pre">Scientific</span> <span class="pre">(wide)</span></code>, or
-<code class="docutils literal notranslate"><span class="pre">Scientific</span> <span class="pre">(narrow)</span></code> layout and then customize it.</p>
-<p>Custom keypad settings are saved and restored automatically.</p>
-<p>You can also right-click directly on the keypad to open the same menu as
-<span class="menuselection">View ‣ Keypad</span>.</p>
+<p>To start from a built-in layout, choose <code class="docutils literal notranslate"><span class="pre">Basic</span></code>, <code class="docutils literal notranslate"><span class="pre">Scientific</span> <span class="pre">(wide)</span></code>, or
+<code class="docutils literal notranslate"><span class="pre">Scientific</span> <span class="pre">(narrow)</span></code> in the <span class="guilabel">Preset</span> selector, then click
+<span class="guilabel">Copy Preset</span>. This replaces the table, including any edits you
+have made. Selecting a preset alone does not change the table.</p>
+<p>Double-click a <span class="guilabel">Label</span> or <span class="guilabel">Text</span> cell to edit it. The
+label is what you see on the button, while the text is what the button
+inserts into the expression. Long values are shortened in the table.
+Hover over a cell to see its full value, or open it for editing.
+Resizing the grid keeps buttons at positions that still fit. Positions
+outside the new grid are removed, and new positions start empty.
+Click <span class="guilabel">OK</span> to save the layout and select <span class="guilabel">Custom</span> in
+the active window. <span class="guilabel">Cancel</span> discards the changes made in the
+dialog and leaves the current layout selected.</p>
+<p>Custom keypad settings are saved and restored automatically.
+Unicode labels and inserted text are preserved.</p>
+<p>You can also right-click directly on the keypad to choose a layout,
+open <span class="guilabel">Edit Custom Keypad</span>, or change the zoom level.</p>
 <div class="versionadded">
 <p><span class="versionmodified added">Added in version 1.0.</span></p>
 </div>
@@ -1727,7 +1743,7 @@ versions used a simple custom text format.</p>
   <tr>
     <td width="50%">
       <a class="nav-item nav-item-0"
-         href="../contents.html">SpeedCrunch 1.2.0-rc.3 documentation</a> &#187; <a class="nav-item nav-item-1"
+         href="../contents.html">SpeedCrunch 1.2.0 documentation</a> &#187; <a class="nav-item nav-item-1"
              href="index.html">User Guide</a>
           
     </td>
