@@ -4603,12 +4603,12 @@
     <message>
         <location filename="../../gui/customkeypaddialog.cpp" line="107"/>
         <source>Preset:</source>
-        <translation type="unfinished"></translation>
+        <translation>รูปแบบสำเร็จรูป:</translation>
     </message>
     <message>
         <location filename="../../gui/customkeypaddialog.cpp" line="114"/>
         <source>Copy Preset</source>
-        <translation type="unfinished"></translation>
+        <translation>คัดลอกรูปแบบสำเร็จรูป</translation>
     </message>
     <message>
         <location filename="../../gui/customkeypaddialog.cpp" line="136"/>
@@ -4638,12 +4638,12 @@
     <message>
         <location filename="../../gui/customkeypaddialog.cpp" line="160"/>
         <source>Click Copy Preset to replace the table with the selected layout.</source>
-        <translation type="unfinished"></translation>
+        <translation>คลิก คัดลอกรูปแบบสำเร็จรูป เพื่อแทนที่ตารางด้วยรูปแบบที่เลือก.</translation>
     </message>
     <message>
         <location filename="../../gui/customkeypaddialog.cpp" line="164"/>
         <source>Double-click a Label or Text cell to edit it. Label is shown on the button. Text is inserted into the expression.</source>
-        <translation type="unfinished"></translation>
+        <translation>ดับเบิลคลิกเซลล์ในคอลัมน์ป้ายกำกับหรือข้อความเพื่อแก้ไข ป้ายกำกับจะแสดงบนปุ่ม ข้อความจะถูกแทรกในนิพจน์.</translation>
     </message>
 </context>
 <context>
@@ -7616,7 +7616,7 @@
     <message>
         <location filename="../../gui/mainwindow.cpp" line="4986"/>
         <source>&amp;Custom</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;กำหนดเอง</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="4995"/>
@@ -7814,7 +7814,7 @@
     <message>
         <location filename="../../gui/mainwindow.cpp" line="5103"/>
         <source>Edit &amp;Custom Keypad...</source>
-        <translation type="unfinished"></translation>
+        <translation>แก้ไขแป้นกด&amp;กำหนดเอง...</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="5104"/>

@@ -4603,12 +4603,12 @@
     <message>
         <location filename="../../gui/customkeypaddialog.cpp" line="107"/>
         <source>Preset:</source>
-        <translation type="unfinished"></translation>
+        <translation>Forvalg:</translation>
     </message>
     <message>
         <location filename="../../gui/customkeypaddialog.cpp" line="114"/>
         <source>Copy Preset</source>
-        <translation type="unfinished"></translation>
+        <translation>Kopiér forvalg</translation>
     </message>
     <message>
         <location filename="../../gui/customkeypaddialog.cpp" line="136"/>
@@ -4638,12 +4638,12 @@
     <message>
         <location filename="../../gui/customkeypaddialog.cpp" line="160"/>
         <source>Click Copy Preset to replace the table with the selected layout.</source>
-        <translation type="unfinished"></translation>
+        <translation>Klik på Kopiér forvalg for at erstatte tabellen med det valgte layout.</translation>
     </message>
     <message>
         <location filename="../../gui/customkeypaddialog.cpp" line="164"/>
         <source>Double-click a Label or Text cell to edit it. Label is shown on the button. Text is inserted into the expression.</source>
-        <translation type="unfinished"></translation>
+        <translation>Dobbeltklik på en celle i kolonnen Etiket eller Tekst for at redigere den. Etiketten vises på knappen. Teksten indsættes i udtrykket.</translation>
     </message>
 </context>
 <context>
@@ -7547,7 +7547,7 @@
     <message>
         <location filename="../../gui/mainwindow.cpp" line="4986"/>
         <source>&amp;Custom</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Tilpasset</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="4995"/>
@@ -7770,7 +7770,7 @@
     <message>
         <location filename="../../gui/mainwindow.cpp" line="5103"/>
         <source>Edit &amp;Custom Keypad...</source>
-        <translation type="unfinished"></translation>
+        <translation>Rediger &amp;tilpasset tastatur...</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="5104"/>

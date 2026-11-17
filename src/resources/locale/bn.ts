@@ -4603,12 +4603,12 @@
     <message>
         <location filename="../../gui/customkeypaddialog.cpp" line="107"/>
         <source>Preset:</source>
-        <translation type="unfinished"></translation>
+        <translation>পূর্বনির্ধারিত বিন্যাস:</translation>
     </message>
     <message>
         <location filename="../../gui/customkeypaddialog.cpp" line="114"/>
         <source>Copy Preset</source>
-        <translation type="unfinished"></translation>
+        <translation>পূর্বনির্ধারিত বিন্যাস অনুলিপি করুন</translation>
     </message>
     <message>
         <location filename="../../gui/customkeypaddialog.cpp" line="136"/>
@@ -4638,12 +4638,12 @@
     <message>
         <location filename="../../gui/customkeypaddialog.cpp" line="160"/>
         <source>Click Copy Preset to replace the table with the selected layout.</source>
-        <translation type="unfinished"></translation>
+        <translation>নির্বাচিত বিন্যাস দিয়ে সারণিটি প্রতিস্থাপন করতে «পূর্বনির্ধারিত বিন্যাস অনুলিপি করুন» বোতামে ক্লিক করুন।</translation>
     </message>
     <message>
         <location filename="../../gui/customkeypaddialog.cpp" line="164"/>
         <source>Double-click a Label or Text cell to edit it. Label is shown on the button. Text is inserted into the expression.</source>
-        <translation type="unfinished"></translation>
+        <translation>সম্পাদনা করতে লেবেল বা পাঠ্য কলামের কোনো ঘরে দুবার ক্লিক করুন। লেবেল বোতামে দেখানো হয়। পাঠ্য রাশিতে সন্নিবেশ করা হয়।</translation>
     </message>
 </context>
 <context>
@@ -7616,7 +7616,7 @@
     <message>
         <location filename="../../gui/mainwindow.cpp" line="4986"/>
         <source>&amp;Custom</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;কাস্টম</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="4995"/>
@@ -7814,7 +7814,7 @@
     <message>
         <location filename="../../gui/mainwindow.cpp" line="5103"/>
         <source>Edit &amp;Custom Keypad...</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;কাস্টম কীপ্যাড সম্পাদনা করুন...</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="5104"/>

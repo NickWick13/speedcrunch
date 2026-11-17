@@ -4603,12 +4603,12 @@
     <message>
         <location filename="../../gui/customkeypaddialog.cpp" line="107"/>
         <source>Preset:</source>
-        <translation type="unfinished"></translation>
+        <translation>Готова настройка:</translation>
     </message>
     <message>
         <location filename="../../gui/customkeypaddialog.cpp" line="114"/>
         <source>Copy Preset</source>
-        <translation type="unfinished"></translation>
+        <translation>Копиране на готовата настройка</translation>
     </message>
     <message>
         <location filename="../../gui/customkeypaddialog.cpp" line="136"/>
@@ -4638,12 +4638,12 @@
     <message>
         <location filename="../../gui/customkeypaddialog.cpp" line="160"/>
         <source>Click Copy Preset to replace the table with the selected layout.</source>
-        <translation type="unfinished"></translation>
+        <translation>Щракнете върху „Копиране на готовата настройка“, за да замените таблицата с избраната подредба.</translation>
     </message>
     <message>
         <location filename="../../gui/customkeypaddialog.cpp" line="164"/>
         <source>Double-click a Label or Text cell to edit it. Label is shown on the button. Text is inserted into the expression.</source>
-        <translation type="unfinished"></translation>
+        <translation>Щракнете двукратно върху клетка в колоната „Етикет“ или „Текст“, за да я редактирате. Етикетът се показва върху бутона. Текстът се вмъква в израза.</translation>
     </message>
 </context>
 <context>
@@ -7547,7 +7547,7 @@
     <message>
         <location filename="../../gui/mainwindow.cpp" line="4986"/>
         <source>&amp;Custom</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Потребителски</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="4995"/>
@@ -7770,7 +7770,7 @@
     <message>
         <location filename="../../gui/mainwindow.cpp" line="5103"/>
         <source>Edit &amp;Custom Keypad...</source>
-        <translation type="unfinished"></translation>
+        <translation>Редактиране на &amp;потребителската клавиатура...</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="5104"/>

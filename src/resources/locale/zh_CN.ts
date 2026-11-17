@@ -4603,12 +4603,12 @@
     <message>
         <location filename="../../gui/customkeypaddialog.cpp" line="107"/>
         <source>Preset:</source>
-        <translation type="unfinished"></translation>
+        <translation>预设:</translation>
     </message>
     <message>
         <location filename="../../gui/customkeypaddialog.cpp" line="114"/>
         <source>Copy Preset</source>
-        <translation type="unfinished"></translation>
+        <translation>复制预设</translation>
     </message>
     <message>
         <location filename="../../gui/customkeypaddialog.cpp" line="136"/>
@@ -4638,12 +4638,12 @@
     <message>
         <location filename="../../gui/customkeypaddialog.cpp" line="160"/>
         <source>Click Copy Preset to replace the table with the selected layout.</source>
-        <translation type="unfinished"></translation>
+        <translation>点击“复制预设”，用所选布局替换表格。</translation>
     </message>
     <message>
         <location filename="../../gui/customkeypaddialog.cpp" line="164"/>
         <source>Double-click a Label or Text cell to edit it. Label is shown on the button. Text is inserted into the expression.</source>
-        <translation type="unfinished"></translation>
+        <translation>双击“标签”或“文本”单元格进行编辑。标签显示在按钮上。文本插入到表达式中。</translation>
     </message>
 </context>
 <context>
@@ -7547,7 +7547,7 @@
     <message>
         <location filename="../../gui/mainwindow.cpp" line="4986"/>
         <source>&amp;Custom</source>
-        <translation type="unfinished"></translation>
+        <translation>自定义(&amp;C)</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="4995"/>
@@ -7770,7 +7770,7 @@
     <message>
         <location filename="../../gui/mainwindow.cpp" line="5103"/>
         <source>Edit &amp;Custom Keypad...</source>
-        <translation type="unfinished"></translation>
+        <translation>编辑自定义键盘(&amp;C)...</translation>
     </message>
     <message>
         <location filename="../../gui/mainwindow.cpp" line="5104"/>
