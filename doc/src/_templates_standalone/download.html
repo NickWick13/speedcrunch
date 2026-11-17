@@ -1,6 +1,6 @@
 {% extends "entrance.html" %}
 
-{% macro downloads(win=[], osx=[], linux=[], win_port_text=True, linux_dropdown=True) -%}
+{% macro downloads(win=[], osx=[], linux=[], win_port_text=True, linux_dropdown=True, macos_first_launch_warning=True) -%}
   <div class="container-fluid">
     <div class="row">
       {% if win -%}
@@ -38,10 +38,12 @@
             <a class="btn btn-primary btn-md dl-button"><i class="fa fa-laptop fa-lg" style="vertical-align:middle;"></i>&nbsp;Download</a>
           </p>
         {%- endif %}
-        <div class="alert alert-warning text-left" role="alert">
-          <p><strong>{% trans %}macOS first launch{% endtrans %}</strong></p>
-          <p>{% trans %}If macOS blocks SpeedCrunch, open System Settings &gt; Privacy &amp; Security and click Open Anyway.{% endtrans %} <a href="https://support.apple.com/en-am/guide/mac-help/mh40616/27/mac/27">{% trans %}Apple's instructions{% endtrans %}</a></p>
-        </div>
+        {% if macos_first_launch_warning -%}
+          <div class="alert alert-warning text-left" role="alert">
+            <p><strong>{% trans %}macOS first launch{% endtrans %}</strong></p>
+            <p>{% trans %}If macOS blocks SpeedCrunch, open System Settings &gt; Privacy &amp; Security and click Open Anyway.{% endtrans %} <a href="https://support.apple.com/en-am/guide/mac-help/mh40616/27/mac/27">{% trans %}Apple's instructions{% endtrans %}</a></p>
+          </div>
+        {%- endif %}
       </div>
 
       {% if linux -%}
@@ -107,19 +109,20 @@
     <div class="container">
       <h1>{% trans %}Download SpeedCrunch{% endtrans %}</h1>
       <p>{% trans %}Free, open-source scientific calculator for Windows, macOS and Linux.{% endtrans %}</p>
-      <section aria-labelledby="version-1-1">
-        <h2 id="version-1-1" style="scroll-margin-top: 80px;">{% trans %}Version 1.1{% endtrans %}</h2>
+      <section aria-labelledby="version-1-2">
+        <h2 id="version-1-2" style="scroll-margin-top: 80px;">{% trans %}Version 1.2.0{% endtrans %}</h2>
         {{ downloads(
           win=[
-            (_('Installer'), 'https://github.com/heldercorreia/speedcrunch/releases/download/v1.1.0/SpeedCrunch-1.1-windows-x64.exe'),
-            (_('Portable'), 'https://github.com/heldercorreia/speedcrunch/releases/download/v1.1.0/SpeedCrunch-1.1-windows-x64.zip'),],
+            (_('Installer'), 'https://github.com/heldercorreia/speedcrunch/releases/download/v1.2.0/SpeedCrunch-1.2.0-windows-x64.exe'),
+            (_('Portable'), 'https://github.com/heldercorreia/speedcrunch/releases/download/v1.2.0/SpeedCrunch-1.2.0-windows-x64.zip'),],
 
           osx=[
-            (_('Installer'), 'https://github.com/heldercorreia/speedcrunch/releases/download/v1.1.0/SpeedCrunch-1.1-macos-arm64.dmg'),
-            (_('Portable'), 'https://github.com/heldercorreia/speedcrunch/releases/download/v1.1.0/SpeedCrunch-1.1-macos-arm64.zip'),],
+            (_('Installer'), 'https://github.com/heldercorreia/speedcrunch/releases/download/v1.2.0/SpeedCrunch-1.2.0-macos-arm64.dmg'),
+            (_('Portable'), 'https://github.com/heldercorreia/speedcrunch/releases/download/v1.2.0/SpeedCrunch-1.2.0-macos-arm64.zip'),],
 
           linux=[('Flathub', 'https://flathub.org/apps/org.speedcrunch.SpeedCrunch'),],
           linux_dropdown=False,
+          macos_first_launch_warning=False,
         ) }}
         <hr/>
 
@@ -127,110 +130,229 @@
           {% trans %}Unsure about the installation?{% endtrans %}
           <a href="{{ pathto('userguide/installation') }}">{% trans %}Have a look at the instructions.{% endtrans %}</a>
         </p>
-        <p>{% trans %}Older versions:{% endtrans %} <a href="#version-1-0">1.0</a>, <a href="#older-versions">0.12</a></p>
+        <p>{% trans %}Older versions:{% endtrans %} <a href="#version-1-1">1.1</a>, <a href="#version-1-0">1.0</a>, <a href="#older-versions">0.12</a></p>
         <hr/>
 
-        <section aria-labelledby="whats-new-in-1-1">
-          <h3 id="whats-new-in-1-1" style="scroll-margin-top: 80px;">{% trans %}What's new in 1.1{% endtrans %}</h3>
+        <section aria-labelledby="highlights-1-2">
+          <h3 id="highlights-1-2" style="scroll-margin-top: 80px;">{% trans %}Highlights{% endtrans %}</h3>
+          <ul>
+            <li>{% trans %}SpeedCrunch starts much faster on Windows, even with many saved tabs.{% endtrans %}</li>
+            <li>{% trans %}Set your own{% endtrans %} <a href="{{ pathto('userguide/interface') }}#keyboard-shortcuts">{% trans %}keyboard shortcuts{% endtrans %}</a> {% trans %}for common actions.{% endtrans %}</li>
+            <li>{% trans %}Change the app's look in one step with the{% endtrans %} <a href="{{ pathto('userguide/interface') }}#user-interface-settings">{% trans %}Classic, Modern, and Hybrid presets{% endtrans %}</a>.</li>
+            <li>{% trans %}Choose what happens when you{% endtrans %} <a href="{{ pathto('userguide/interface') }}#window">{% trans %}launch SpeedCrunch while it's already running{% endtrans %}</a>. {% trans %}Bring an open window forward, open a new window, or add a tab.{% endtrans %}</li>
+            <li>{% trans %}Find answers to common questions in the{% endtrans %} <a href="{{ pathto('faq') }}">{% trans %}new FAQ{% endtrans %}</a>.</li>
+          </ul>
+        </section>
+        <hr/>
+
+        <section aria-labelledby="whats-new-in-1-2">
+          <h3 id="whats-new-in-1-2" style="scroll-margin-top: 80px;">{% trans %}What's new in 1.2{% endtrans %}</h3>
           <ul class="list-inline">
-            <li><a href="#release-1-1-functions">{% trans %}Functions{% endtrans %}</a></li>
-            <li><a href="#release-1-1-constants-units">{% trans %}Constants and units{% endtrans %}</a></li>
-            <li><a href="#release-1-1-input">{% trans %}Input{% endtrans %}</a></li>
-            <li><a href="#release-1-1-results">{% trans %}Results{% endtrans %}</a></li>
-            <li><a href="#release-1-1-sessions">{% trans %}Sessions and settings{% endtrans %}</a></li>
-            <li><a href="#release-1-1-appearance">{% trans %}Appearance and panels{% endtrans %}</a></li>
-            <li><a href="#release-1-1-keypad">{% trans %}Keypad{% endtrans %}</a></li>
-            <li><a href="#release-1-1-other">{% trans %}Other improvements{% endtrans %}</a></li>
+            <li><a href="#release-1-2-constants-units">{% trans %}Constants and units{% endtrans %}</a></li>
+            <li><a href="#release-1-2-input">{% trans %}Input{% endtrans %}</a></li>
+            <li><a href="#release-1-2-results">{% trans %}Results{% endtrans %}</a></li>
+            <li><a href="#release-1-2-sessions">{% trans %}Sessions and settings{% endtrans %}</a></li>
+            <li><a href="#release-1-2-appearance">{% trans %}Appearance and panels{% endtrans %}</a></li>
+            <li><a href="#release-1-2-keypad">{% trans %}Keypad{% endtrans %}</a></li>
+            <li><a href="#release-1-2-other">{% trans %}Other improvements{% endtrans %}</a></li>
           </ul>
 
-          <h4 id="release-1-1-functions" style="scroll-margin-top: 80px;">{% trans %}Functions{% endtrans %}</h4>
+          <h4 id="release-1-2-constants-units" style="scroll-margin-top: 80px;">{% trans %}Constants and units{% endtrans %}</h4>
           <ul>
-            <li>{% trans %}Add{% endtrans %} <a href="{{ pathto('reference/basic') }}#sc.root"><code>root(n; x)</code></a> {% trans %}for nth roots, including negative values and quantities with units. For example,{% endtrans %} <code>root(5; -32)</code> {% trans %}returns{% endtrans %} <code>-2</code>.</li>
-            <li>{% trans %}Fix factorials in{% endtrans %} <a href="{{ pathto('userguide/advanced') }}#user-functions">{% trans %}user-defined functions{% endtrans %}</a>, {% trans %}such as{% endtrans %} <code>f(n) = n!</code>.</li>
+            <li><a href="{{ pathto('userguide/interface') }}#expression-editor-features">{% trans %}Search constants{% endtrans %}</a> {% trans %}with{% endtrans %} <kbd>Ctrl+K</kbd> (<kbd>Cmd+K</kbd> {% trans %}on macOS) by default.{% endtrans %}</li>
+            <li>{% trans %}Correct the values shown when{% endtrans %} <a href="{{ pathto('reference/units') }}#composed-units">{% trans %}multiplying or dividing quantities with prefixed units{% endtrans %}</a>, {% trans %}including angular rates.{% endtrans %}</li>
+            <li>{% trans %}Fix{% endtrans %} <a href="{{ pathto('userguide/advanced') }}#units">{% trans %}unit grouping in division{% endtrans %}</a> {% trans %}when the first value has a unit. For example,{% endtrans %} <code>299792458[m/s] / 10[MHz]</code> {% trans %}gives{% endtrans %} <code>29.9792458 m</code>. {% trans %}This also works when the first value comes from a variable or function.{% endtrans %}</li>
+            <li>{% trans %}Cancel matching units correctly and{% endtrans %} <a href="{{ pathto('reference/units') }}#composed-units">{% trans %}display durations in time units{% endtrans %}</a>. {% trans %}For example,{% endtrans %} <code>1[J] / 1[W]</code> {% trans %}gives{% endtrans %} <code>1 s</code>.</li>
+            <li>{% trans %}Preserve the case of unit symbols, so{% endtrans %} <code>kT</code> {% trans %}(kilotesla) and{% endtrans %} <code>kt</code> {% trans %}(knot) stay distinct.{% endtrans %}</li>
           </ul>
 
-          <h4 id="release-1-1-constants-units" style="scroll-margin-top: 80px;">{% trans %}Constants and units{% endtrans %}</h4>
+          <h4 id="release-1-2-input" style="scroll-margin-top: 80px;">{% trans %}Input{% endtrans %}</h4>
           <ul>
-            <li><a href="{{ pathto('userguide/interface') }}#expression-editor-features">{% trans %}Search constants{% endtrans %}</a> {% trans %}by name or unit with{% endtrans %} <kbd>Ctrl+Space</kbd>. {% trans %}Select a result with the arrow keys and insert it with Enter, Tab, or a click. Change the shortcut in Settings > Keyboard Shortcuts if your system already uses it.{% endtrans %}</li>
-            <li>{% trans %}Improve searching and keyboard selection in the Constants panel.{% endtrans %}</li>
-            <li>{% trans %}Correct the units of the muon, proton, and neutron energy equivalents.{% endtrans %}</li>
-            <li>{% trans %}Allow powers of{% endtrans %} <a href="{{ pathto('userguide/advanced') }}#units">{% trans %}grouped quantities{% endtrans %}</a>, {% trans %}such as{% endtrans %} <code>(2[m])^2</code>.</li>
-            <li>{% trans %}Correct results shown in{% endtrans %} <code>J/m²</code> {% trans %}and{% endtrans %} <code>J/m³</code> {% trans %}when using prefixed units.{% endtrans %}</li>
+            <li>{% trans %}Read decimal and grouping marks according to the selected{% endtrans %} <a href="{{ pathto('userguide/interface') }}#number-format">{% trans %}number format{% endtrans %}</a>, {% trans %}even when grouping is off for display.{% endtrans %}</li>
+            <li>{% trans %}Preserve commas and dots when you type or paste numbers, and fix grouped{% endtrans %} <a href="{{ pathto('userguide/syntax') }}#non-decimal-bases">{% trans %}hexadecimal input{% endtrans %}</a> {% trans %}such as{% endtrans %} <code>0xAB CD</code>.</li>
+            <li>{% trans %}Report an error for invalid digit groups such as{% endtrans %} <code>1,2,3</code> {% trans %}or{% endtrans %} <code>1,,234</code>.</li>
+            <li>{% trans %}Allow negative numbers after{% endtrans %} <code>+</code>, <code>×</code>, {% trans %}and{% endtrans %} <code>/</code>. <code>3--2</code> {% trans %}now gives{% endtrans %} <code>5</code>. {% trans %}Remove the{% endtrans %} <code>--</code> {% trans %}shortcut for unit conversion. Use{% endtrans %} <code>-&gt;</code> {% trans %}or{% endtrans %} <code>in</code> {% trans %}to{% endtrans %} <a href="{{ pathto('reference/units') }}#conversions">{% trans %}convert between units{% endtrans %}</a>.</li>
+            <li>{% trans %}Return focus to the correct input pane after searching a panel or inserting a constant.{% endtrans %}</li>
           </ul>
 
-          <h4 id="release-1-1-input" style="scroll-margin-top: 80px;">{% trans %}Input{% endtrans %}</h4>
+          <h4 id="release-1-2-results" style="scroll-margin-top: 80px;">{% trans %}Results{% endtrans %}</h4>
           <ul>
-            <li>{% trans %}Fix undo and redo, and copy and paste.{% endtrans %}</li>
-            <li>{% trans %}Fix clipped text and excess space in wrapped input with different fonts.{% endtrans %}</li>
-            <li>{% trans %}Fix crashes when typing operators in long, wrapped expressions.{% endtrans %}</li>
-            <li>{% trans %}Restore{% endtrans %} <a href="{{ pathto('userguide/interface') }}#editing">{% trans %}digit grouping while typing{% endtrans %}</a>, {% trans %}following the selected number format.{% endtrans %}</li>
-            <li>{% trans %}Add an option to turn off{% endtrans %} <a href="{{ pathto('userguide/interface') }}#editing">{% trans %}automatic input adjustments{% endtrans %}</a>, {% trans %}such as operator replacements and closing brackets.{% endtrans %}</li>
-            <li>{% trans %}Add optional{% endtrans %} <a href="{{ pathto('userguide/interface') }}#editing">{% trans %}Enter-to-accept autocomplete and Escape-to-clear behavior{% endtrans %}</a>.</li>
-            <li>{% trans %}Add an option to use a steady cursor instead of a blinking one.{% endtrans %}</li>
-            <li>{% trans %}Preserve{% endtrans %} <a href="{{ pathto('userguide/syntax') }}#comments">{% trans %}comments{% endtrans %}</a> {% trans %}as written and prevent them from affecting result formatting.{% endtrans %}</li>
-            <li>{% trans %}Improve recalling expressions from history and focus the editor after startup.{% endtrans %}</li>
-            <li>{% trans %}Remove the empty-history hint.{% endtrans %}</li>
+            <li>{% trans %}Show the correct decimal values in the interpreted expression.{% endtrans %}</li>
+            <li>{% trans %}Keep the scroll-to-bottom button clear of scrollbars.{% endtrans %}</li>
+            <li>{% trans %}Shorten the{% endtrans %} <a href="{{ pathto('userguide/interface') }}#complex-numbers">{% trans %}Complex Form{% endtrans %}</a> {% trans %}menu labels and give rounding up and down clearer names in{% endtrans %} <a href="{{ pathto('userguide/interface') }}#results">{% trans %}Results settings{% endtrans %}</a>.</li>
           </ul>
 
-          <h4 id="release-1-1-results" style="scroll-margin-top: 80px;">{% trans %}Results{% endtrans %}</h4>
+          <h4 id="release-1-2-sessions" style="scroll-margin-top: 80px;">{% trans %}Sessions and settings{% endtrans %}</h4>
           <ul>
-            <li>{% trans %}Restore free copying.{% endtrans %}</li>
-            <li><a href="{{ pathto('userguide/interface') }}#result-display-interactions">{% trans %}Copy a whole calculation{% endtrans %}</a>, {% trans %}including all displayed result formats, either across multiple lines or as a single line.{% endtrans %}</li>
-            <li>{% trans %}Add optional{% endtrans %} <a href="{{ pathto('userguide/interface') }}#results">{% trans %}removal of trailing decimal zeroes{% endtrans %}</a>.</li>
-            <li>{% trans %}Simplify live previews to show just the results.{% endtrans %}</li>
-            <li>{% trans %}Keep live result previews above the editor when recalling long expressions from history.{% endtrans %}</li>
-            <li>{% trans %}Avoid unnecessary extra simplification lines.{% endtrans %}</li>
-            <li>{% trans %}Restore the{% endtrans %} <a href="{{ pathto('userguide/interface') }}#keyboard-shortcuts">{% trans %}F2-F5 and F7-F10 notation shortcuts{% endtrans %}</a>.</li>
+            <li>{% trans %}Use{% endtrans %} <a href="{{ pathto('userguide/interface') }}#keyboard-shortcuts"><strong>{% trans %}Settings → Keyboard Shortcuts{% endtrans %}</strong></a> {% trans %}to set shortcuts, including sequences of key combinations. SpeedCrunch checks for conflicts and saves your choices across all windows.{% endtrans %}</li>
+            <li>{% trans %}Use{% endtrans %} <a href="{{ pathto('userguide/interface') }}#session-tabs-and-panes"><strong>{% trans %}Edit → Clear History{% endtrans %}</strong></a>, {% trans %}or press{% endtrans %} <kbd>Ctrl+L</kbd> (<kbd>Cmd+L</kbd> {% trans %}on macOS), to clear the active session's calculations and unfinished input while keeping its definitions. You can turn off the confirmation prompt in{% endtrans %} <a href="{{ pathto('userguide/interface') }}#results">{% trans %}Results settings{% endtrans %}</a>.</li>
+            <li>{% trans %}Use{% endtrans %} <a href="{{ pathto('userguide/interface') }}#session-tabs-and-panes"><strong>{% trans %}Session → Reset{% endtrans %}</strong></a> {% trans %}to also clear variables, functions, and units defined in the session. Global user definitions stay available.{% endtrans %}</li>
+            <li>{% trans %}Under{% endtrans %} <a href="{{ pathto('userguide/interface') }}#window"><strong>{% trans %}Settings → Window → On Subsequent Launch{% endtrans %}</strong></a>, {% trans %}choose whether to bring an existing window forward, open a new window, or add a tab when SpeedCrunch is already running.{% endtrans %}</li>
+            <li>{% trans %}Close windows individually and quit when the last window closes. Closing a window's last tab also closes that window if another window is open.{% endtrans %}</li>
+            <li>{% trans %}Give new tabs unique names across all open windows.{% endtrans %}</li>
+            <li>{% trans %}Keep saved functions that use{% endtrans %} <a href="{{ pathto('userguide/advanced') }}#user-units">{% trans %}custom units{% endtrans %}</a> {% trans %}after a restart.{% endtrans %}</li>
+            <li>{% trans %}Fix window size resets on Wayland and a crash when resetting panel layouts.{% endtrans %}</li>
           </ul>
 
-          <h4 id="release-1-1-sessions" style="scroll-margin-top: 80px;">{% trans %}Sessions and settings{% endtrans %}</h4>
+          <h4 id="release-1-2-appearance" style="scroll-margin-top: 80px;">{% trans %}Appearance and panels{% endtrans %}</h4>
           <ul>
-            <li>{% trans %}Add{% endtrans %} <a href="{{ pathto('userguide/interface') }}#private-sessions">{% trans %}private tabs{% endtrans %}</a> {% trans %}that discard their contents when closed and are not restored on the next launch. Use{% endtrans %} <kbd>Ctrl+Shift+N</kbd> (<kbd>Cmd+Shift+N</kbd> {% trans %}on macOS) to open one.{% endtrans %}</li>
-            <li>{% trans %}Allow switching between private and saved sessions, and optionally open a private tab at startup.{% endtrans %}</li>
-            <li>{% trans %}Add{% endtrans %} <a href="{{ pathto('userguide/interface') }}#resetting-settings">{% trans %}Reset All Settings...{% endtrans %}</a>, {% trans %}keeping sessions, history, and user definitions.{% endtrans %}</li>
-            <li>{% trans %}Fix global{% endtrans %} <a href="{{ pathto('userguide/interface') }}#user-definitions">{% trans %}user definitions{% endtrans %}</a> {% trans %}missing from restored sessions.{% endtrans %}</li>
-            <li>{% trans %}Make{% endtrans %} <a href="{{ pathto('userguide/interface') }}#session-tabs-and-panes">{% trans %}session renaming, cloning, closed-tab recovery, and pane controls{% endtrans %}</a> {% trans %}easier to find in the menus. Cloning also copies unfinished input.{% endtrans %}</li>
-            <li>{% trans %}Organize the result context menu into Copy, Remove, Split, and Session groups.{% endtrans %}</li>
-            <li>{% trans %}Move{% endtrans %} <a href="{{ pathto('userguide/interface') }}#number-format">{% trans %}Number Format...{% endtrans %}</a> {% trans %}directly under Settings and simplify the result and appearance menus.{% endtrans %}</li>
-            <li>{% trans %}Apply font changes across all windows and fix font selection on macOS 27 and later.{% endtrans %}</li>
-            <li>{% trans %}Fix commands acting on the wrong window when used from a floating panel.{% endtrans %}</li>
+            <li>{% trans %}Switch between{% endtrans %} <a href="{{ pathto('userguide/interface') }}#user-interface-settings">{% trans %}Classic, Modern, and Hybrid style presets{% endtrans %}</a>. {% trans %}Classic is the default on first launch and after resetting settings. Upgrades keep your saved appearance.{% endtrans %}</li>
+            <li>{% trans %}Use{% endtrans %} <strong>One Dark</strong> {% trans %}as the default color theme.{% endtrans %}</li>
+            <li>{% trans %}Choose{% endtrans %} <strong>{% trans %}Follow System{% endtrans %}</strong>, <strong>{% trans %}Light{% endtrans %}</strong>, {% trans %}or{% endtrans %} <strong>{% trans %}Dark{% endtrans %}</strong> {% trans %}under{% endtrans %} <a href="{{ pathto('userguide/interface') }}#user-interface-settings"><strong>{% trans %}System Color Mode{% endtrans %}</strong></a>.</li>
+            <li>{% trans %}Use either the system style or the SpeedCrunch theme for tooltips and popup lists.{% endtrans %}</li>
+            <li>{% trans %}Fix dark mode for dialogs and title bars on Windows 10.{% endtrans %}</li>
+            <li>{% trans %}Fix missing symbols and text on Windows and make units easier to read in the constants popup.{% endtrans %}</li>
+            <li>{% trans %}Allow bold and italic text styles even when a font has only a regular style.{% endtrans %}</li>
+            <li>{% trans %}Keep the text cursor visible in{% endtrans %} <a href="{{ pathto('userguide/interface') }}#user-definitions"><strong>{% trans %}User Definitions{% endtrans %}</strong></a> {% trans %}with any theme.{% endtrans %}</li>
+            <li>{% trans %}Remember panel widths across restarts and preserve window and panel sizes when changing the layout.{% endtrans %}</li>
+            <li>{% trans %}Open the Constants, Functions, and Formula Book panels wide enough to show their contents when screen space allows.{% endtrans %}</li>
+            <li>{% trans %}Fit Bitfield bits and buttons into narrow panels without overlapping rows.{% endtrans %}</li>
+            <li>{% trans %}Fix menu spacing and show the overflow button when the menu runs out of room.{% endtrans %}</li>
           </ul>
 
-          <h4 id="release-1-1-appearance" style="scroll-margin-top: 80px;">{% trans %}Appearance and panels{% endtrans %}</h4>
+          <h4 id="release-1-2-keypad" style="scroll-margin-top: 80px;">{% trans %}Keypad{% endtrans %}</h4>
           <ul>
-            <li>{% trans %}Add separate{% endtrans %} <a href="{{ pathto('userguide/interface') }}#user-interface-settings">{% trans %}system and SpeedCrunch theme choices{% endtrans %}</a> {% trans %}for menus, panels, and the status bar.{% endtrans %}</li>
-            <li>{% trans %}Add a compact{% endtrans %} <a href="{{ pathto('userguide/interface') }}#user-interface-settings">{% trans %}Classic layout for input and results{% endtrans %}</a>. {% trans %}Modern remains the default.{% endtrans %}</li>
-            <li>{% trans %}Improve text contrast, menu readability, and panel button visibility.{% endtrans %}</li>
-            <li>{% trans %}Match menu icons to the theme and dim disabled menu items and shortcuts.{% endtrans %}</li>
-            <li>{% trans %}Tidy panel spacing, borders, and rounded corners.{% endtrans %}</li>
-            <li>{% trans %}Keep side panels at full height and remember table column order.{% endtrans %}</li>
-            <li>{% trans %}Preserve floating panel positions and visibility across restarts, and prevent floating panels from being grouped unexpectedly.{% endtrans %}</li>
+            <li>{% trans %}Use{% endtrans %} <a href="{{ pathto('userguide/interface') }}#keypad"><strong>{% trans %}Scientific (wide){% endtrans %}</strong></a> {% trans %}by default on first launch and after resetting settings.{% endtrans %}</li>
+            <li>{% trans %}Add a 75% keypad zoom level.{% endtrans %}</li>
+            <li>{% trans %}Open{% endtrans %} <a href="{{ pathto('userguide/interface') }}#keypad"><strong>{% trans %}Edit Custom Keypad{% endtrans %}</strong></a> {% trans %}from{% endtrans %} <strong>{% trans %}Settings{% endtrans %}</strong> {% trans %}or the keypad's right-click menu. Choose{% endtrans %} <strong>{% trans %}Custom{% endtrans %}</strong> {% trans %}to switch to your saved layout.{% endtrans %}</li>
+            <li>{% trans %}Fix a crash when shrinking a custom grid and make long button labels easier to edit.{% endtrans %}</li>
+            <li>{% trans %}Preserve Unicode labels and inserted text when saving custom layouts.{% endtrans %}</li>
+            <li>{% trans %}Use{% endtrans %} <code>DEL</code>, <code>C</code>, <code>x^y</code>, {% trans %}and{% endtrans %} <code>root</code> {% trans %}to avoid missing symbols. Older custom layouts pick up these labels automatically.{% endtrans %}</li>
           </ul>
 
-          <h4 id="release-1-1-keypad" style="scroll-margin-top: 80px;">{% trans %}Keypad{% endtrans %}</h4>
+          <h4 id="release-1-2-other" style="scroll-margin-top: 80px;">{% trans %}Other improvements{% endtrans %}</h4>
           <ul>
-            <li>{% trans %}Add a compact{% endtrans %} <a href="{{ pathto('userguide/interface') }}#user-interface-settings">{% trans %}Classic keypad appearance{% endtrans %}</a> {% trans %}and 50% zoom.{% endtrans %}</li>
-            <li>{% trans %}Restore Zoom in the keypad's right-click menu and fix inconsistent sizing when changing zoom levels.{% endtrans %}</li>
-            <li>{% trans %}Update{% endtrans %} <a href="{{ pathto('userguide/interface') }}#keypad">{% trans %}scientific layouts{% endtrans %}</a> {% trans %}with nth-root, square, and argument-separator buttons, and group related operations together.{% endtrans %}</li>
-            <li>{% trans %}Replace the obsolete{% endtrans %} <code>lg</code> {% trans %}button with{% endtrans %} <a href="{{ pathto('reference/basic') }}#sc.log10"><code>log10</code></a>.</li>
-          </ul>
-
-          <h4 id="release-1-1-other" style="scroll-margin-top: 80px;">{% trans %}Other improvements{% endtrans %}</h4>
-          <ul>
-            <li>{% trans %}Reduce startup delays when restoring sessions, history, and panels.{% endtrans %}</li>
-            <li>{% trans %}Make update checks more responsive and prevent them from delaying window closure.{% endtrans %}</li>
-            <li>{% trans %}Add{% endtrans %} <a href="{{ pathto('userguide/interface') }}#help">{% trans %}Help &gt; App Diagnostics{% endtrans %}</a> {% trans %}with a report that can be copied when asking for help. Show operating system details in About SpeedCrunch.{% endtrans %}</li>
-            <li>{% trans %}Fix a crash when closing windows with certain panels open.{% endtrans %}</li>
-            <li>{% trans %}Add portable macOS ZIP packages that keep settings and sessions beside the app in a{% endtrans %} <code>SpeedCrunch-data</code> {% trans %}folder.{% endtrans %}</li>
-            <li>{% trans %}Set the default macOS minimum version to 14.4 on Apple Silicon.{% endtrans %}</li>
+            <li>{% trans %}Speed up startup and history display, especially when you have many saved tabs.{% endtrans %}</li>
+            <li>{% trans %}Check for updates automatically at most once a week. You can still use{% endtrans %} <a href="{{ pathto('userguide/interface') }}#help"><strong>{% trans %}Help → Check for Updates{% endtrans %}</strong></a> {% trans %}at any time.{% endtrans %}</li>
+            <li>{% trans %}Fix a crash when updating menus.{% endtrans %}</li>
+            <li>{% trans %}Add a{% endtrans %} <a href="{{ pathto('faq') }}">{% trans %}FAQ{% endtrans %}</a> {% trans %}to the user manual.{% endtrans %}</li>
           </ul>
         </section>
-        <hr/>
-        <section aria-labelledby="contributors-1-1">
-          <h3 id="contributors-1-1" style="scroll-margin-top: 80px;">{% trans %}Contributors{% endtrans %}</h3>
-          <p>{% trans %}Thank you to everyone who contributed to SpeedCrunch 1.1.{% endtrans %}</p>
-          <p>Helder Correia, Vitaly Zaitsev, Rodrigo Pedra, Pedro Montes Alcalde, Francis Tseng, Antonio Mannella, Benjamin Robin, Brian Hale, D.J.L. Sales, Matthias Prager, Rafael Fraga, Theodore R. Smith, @ddidderr, @FrankMountainFace, @jetp250, @Matth7878, @nfshr, @pandora1986, @playerofgames, @rafa4mat, @RedNova84, @Sacryn, @tosione.</p>
-        </section>
+      </section>
+      <hr/>
+
+      <section class="panel panel-default" aria-labelledby="version-1-1">
+        <div class="panel-heading">
+          <h2 id="version-1-1" class="panel-title" style="scroll-margin-top: 80px;">
+            <a class="collapsed" role="button" data-toggle="collapse" href="#release-1-1" aria-expanded="false" aria-controls="release-1-1">{% trans %}Version 1.1{% endtrans %}</a>
+          </h2>
+        </div>
+        <div id="release-1-1" class="panel-collapse collapse" role="region" aria-labelledby="version-1-1">
+          <div class="panel-body">
+            {{ downloads(
+              win=[
+                (_('Installer'), 'https://github.com/heldercorreia/speedcrunch/releases/download/v1.1.0/SpeedCrunch-1.1-windows-x64.exe'),
+                (_('Portable'), 'https://github.com/heldercorreia/speedcrunch/releases/download/v1.1.0/SpeedCrunch-1.1-windows-x64.zip'),],
+
+              osx=[
+                (_('Installer'), 'https://github.com/heldercorreia/speedcrunch/releases/download/v1.1.0/SpeedCrunch-1.1-macos-arm64.dmg'),
+                (_('Portable'), 'https://github.com/heldercorreia/speedcrunch/releases/download/v1.1.0/SpeedCrunch-1.1-macos-arm64.zip'),],
+            ) }}
+            <hr/>
+
+            <section aria-labelledby="whats-new-in-1-1">
+              <h3 id="whats-new-in-1-1" style="scroll-margin-top: 80px;">{% trans %}What's new in 1.1{% endtrans %}</h3>
+              <ul class="list-inline">
+                <li><a href="#release-1-1-functions">{% trans %}Functions{% endtrans %}</a></li>
+                <li><a href="#release-1-1-constants-units">{% trans %}Constants and units{% endtrans %}</a></li>
+                <li><a href="#release-1-1-input">{% trans %}Input{% endtrans %}</a></li>
+                <li><a href="#release-1-1-results">{% trans %}Results{% endtrans %}</a></li>
+                <li><a href="#release-1-1-sessions">{% trans %}Sessions and settings{% endtrans %}</a></li>
+                <li><a href="#release-1-1-appearance">{% trans %}Appearance and panels{% endtrans %}</a></li>
+                <li><a href="#release-1-1-keypad">{% trans %}Keypad{% endtrans %}</a></li>
+                <li><a href="#release-1-1-other">{% trans %}Other improvements{% endtrans %}</a></li>
+              </ul>
+
+              <h4 id="release-1-1-functions" style="scroll-margin-top: 80px;">{% trans %}Functions{% endtrans %}</h4>
+              <ul>
+                <li>{% trans %}Add{% endtrans %} <a href="{{ pathto('reference/basic') }}#sc.root"><code>root(n; x)</code></a> {% trans %}for nth roots, including negative values and quantities with units. For example,{% endtrans %} <code>root(5; -32)</code> {% trans %}returns{% endtrans %} <code>-2</code>.</li>
+                <li>{% trans %}Fix factorials in{% endtrans %} <a href="{{ pathto('userguide/advanced') }}#user-functions">{% trans %}user-defined functions{% endtrans %}</a>, {% trans %}such as{% endtrans %} <code>f(n) = n!</code>.</li>
+              </ul>
+
+              <h4 id="release-1-1-constants-units" style="scroll-margin-top: 80px;">{% trans %}Constants and units{% endtrans %}</h4>
+              <ul>
+                <li><a href="{{ pathto('userguide/interface') }}#expression-editor-features">{% trans %}Search constants{% endtrans %}</a> {% trans %}by name or unit with{% endtrans %} <kbd>Ctrl+Space</kbd>. {% trans %}Select a result with the arrow keys and insert it with Enter, Tab, or a click. Change the shortcut in Settings > Keyboard Shortcuts if your system already uses it.{% endtrans %}</li>
+                <li>{% trans %}Improve searching and keyboard selection in the Constants panel.{% endtrans %}</li>
+                <li>{% trans %}Correct the units of the muon, proton, and neutron energy equivalents.{% endtrans %}</li>
+                <li>{% trans %}Allow powers of{% endtrans %} <a href="{{ pathto('userguide/advanced') }}#units">{% trans %}grouped quantities{% endtrans %}</a>, {% trans %}such as{% endtrans %} <code>(2[m])^2</code>.</li>
+                <li>{% trans %}Correct results shown in{% endtrans %} <code>J/m²</code> {% trans %}and{% endtrans %} <code>J/m³</code> {% trans %}when using prefixed units.{% endtrans %}</li>
+              </ul>
+
+              <h4 id="release-1-1-input" style="scroll-margin-top: 80px;">{% trans %}Input{% endtrans %}</h4>
+              <ul>
+                <li>{% trans %}Fix undo and redo, and copy and paste.{% endtrans %}</li>
+                <li>{% trans %}Fix clipped text and excess space in wrapped input with different fonts.{% endtrans %}</li>
+                <li>{% trans %}Fix crashes when typing operators in long, wrapped expressions.{% endtrans %}</li>
+                <li>{% trans %}Restore{% endtrans %} <a href="{{ pathto('userguide/interface') }}#editing">{% trans %}digit grouping while typing{% endtrans %}</a>, {% trans %}following the selected number format.{% endtrans %}</li>
+                <li>{% trans %}Add an option to turn off{% endtrans %} <a href="{{ pathto('userguide/interface') }}#editing">{% trans %}automatic input adjustments{% endtrans %}</a>, {% trans %}such as operator replacements and closing brackets.{% endtrans %}</li>
+                <li>{% trans %}Add optional{% endtrans %} <a href="{{ pathto('userguide/interface') }}#editing">{% trans %}Enter-to-accept autocomplete and Escape-to-clear behavior{% endtrans %}</a>.</li>
+                <li>{% trans %}Add an option to use a steady cursor instead of a blinking one.{% endtrans %}</li>
+                <li>{% trans %}Preserve{% endtrans %} <a href="{{ pathto('userguide/syntax') }}#comments">{% trans %}comments{% endtrans %}</a> {% trans %}as written and prevent them from affecting result formatting.{% endtrans %}</li>
+                <li>{% trans %}Improve recalling expressions from history and focus the editor after startup.{% endtrans %}</li>
+                <li>{% trans %}Remove the empty-history hint.{% endtrans %}</li>
+              </ul>
+
+              <h4 id="release-1-1-results" style="scroll-margin-top: 80px;">{% trans %}Results{% endtrans %}</h4>
+              <ul>
+                <li>{% trans %}Restore free copying.{% endtrans %}</li>
+                <li><a href="{{ pathto('userguide/interface') }}#result-display-interactions">{% trans %}Copy a whole calculation{% endtrans %}</a>, {% trans %}including all displayed result formats, either across multiple lines or as a single line.{% endtrans %}</li>
+                <li>{% trans %}Add optional{% endtrans %} <a href="{{ pathto('userguide/interface') }}#results">{% trans %}removal of trailing decimal zeroes{% endtrans %}</a>.</li>
+                <li>{% trans %}Simplify live previews to show just the results.{% endtrans %}</li>
+                <li>{% trans %}Keep live result previews above the editor when recalling long expressions from history.{% endtrans %}</li>
+                <li>{% trans %}Avoid unnecessary extra simplification lines.{% endtrans %}</li>
+                <li>{% trans %}Restore the{% endtrans %} <a href="{{ pathto('userguide/interface') }}#keyboard-shortcuts">{% trans %}F2-F5 and F7-F10 notation shortcuts{% endtrans %}</a>.</li>
+              </ul>
+
+              <h4 id="release-1-1-sessions" style="scroll-margin-top: 80px;">{% trans %}Sessions and settings{% endtrans %}</h4>
+              <ul>
+                <li>{% trans %}Add{% endtrans %} <a href="{{ pathto('userguide/interface') }}#private-sessions">{% trans %}private tabs{% endtrans %}</a> {% trans %}that discard their contents when closed and are not restored on the next launch. Use{% endtrans %} <kbd>Ctrl+Shift+N</kbd> (<kbd>Cmd+Shift+N</kbd> {% trans %}on macOS) to open one.{% endtrans %}</li>
+                <li>{% trans %}Allow switching between private and saved sessions, and optionally open a private tab at startup.{% endtrans %}</li>
+                <li>{% trans %}Add{% endtrans %} <a href="{{ pathto('userguide/interface') }}#resetting-settings">{% trans %}Reset All Settings...{% endtrans %}</a>, {% trans %}keeping sessions, history, and user definitions.{% endtrans %}</li>
+                <li>{% trans %}Fix global{% endtrans %} <a href="{{ pathto('userguide/interface') }}#user-definitions">{% trans %}user definitions{% endtrans %}</a> {% trans %}missing from restored sessions.{% endtrans %}</li>
+                <li>{% trans %}Make{% endtrans %} <a href="{{ pathto('userguide/interface') }}#session-tabs-and-panes">{% trans %}session renaming, cloning, closed-tab recovery, and pane controls{% endtrans %}</a> {% trans %}easier to find in the menus. Cloning also copies unfinished input.{% endtrans %}</li>
+                <li>{% trans %}Organize the result context menu into Copy, Remove, Split, and Session groups.{% endtrans %}</li>
+                <li>{% trans %}Move{% endtrans %} <a href="{{ pathto('userguide/interface') }}#number-format">{% trans %}Number Format...{% endtrans %}</a> {% trans %}directly under Settings and simplify the result and appearance menus.{% endtrans %}</li>
+                <li>{% trans %}Apply font changes across all windows and fix font selection on macOS 27 and later.{% endtrans %}</li>
+                <li>{% trans %}Fix commands acting on the wrong window when used from a floating panel.{% endtrans %}</li>
+              </ul>
+
+              <h4 id="release-1-1-appearance" style="scroll-margin-top: 80px;">{% trans %}Appearance and panels{% endtrans %}</h4>
+              <ul>
+                <li>{% trans %}Add separate{% endtrans %} <a href="{{ pathto('userguide/interface') }}#user-interface-settings">{% trans %}system and SpeedCrunch theme choices{% endtrans %}</a> {% trans %}for menus, panels, and the status bar.{% endtrans %}</li>
+                <li>{% trans %}Add a compact{% endtrans %} <a href="{{ pathto('userguide/interface') }}#user-interface-settings">{% trans %}Classic layout for input and results{% endtrans %}</a>. {% trans %}Modern remains the default.{% endtrans %}</li>
+                <li>{% trans %}Improve text contrast, menu readability, and panel button visibility.{% endtrans %}</li>
+                <li>{% trans %}Match menu icons to the theme and dim disabled menu items and shortcuts.{% endtrans %}</li>
+                <li>{% trans %}Tidy panel spacing, borders, and rounded corners.{% endtrans %}</li>
+                <li>{% trans %}Keep side panels at full height and remember table column order.{% endtrans %}</li>
+                <li>{% trans %}Preserve floating panel positions and visibility across restarts, and prevent floating panels from being grouped unexpectedly.{% endtrans %}</li>
+              </ul>
+
+              <h4 id="release-1-1-keypad" style="scroll-margin-top: 80px;">{% trans %}Keypad{% endtrans %}</h4>
+              <ul>
+                <li>{% trans %}Add a compact{% endtrans %} <a href="{{ pathto('userguide/interface') }}#user-interface-settings">{% trans %}Classic keypad appearance{% endtrans %}</a> {% trans %}and 50% zoom.{% endtrans %}</li>
+                <li>{% trans %}Restore Zoom in the keypad's right-click menu and fix inconsistent sizing when changing zoom levels.{% endtrans %}</li>
+                <li>{% trans %}Update{% endtrans %} <a href="{{ pathto('userguide/interface') }}#keypad">{% trans %}scientific layouts{% endtrans %}</a> {% trans %}with nth-root, square, and argument-separator buttons, and group related operations together.{% endtrans %}</li>
+                <li>{% trans %}Replace the obsolete{% endtrans %} <code>lg</code> {% trans %}button with{% endtrans %} <a href="{{ pathto('reference/basic') }}#sc.log10"><code>log10</code></a>.</li>
+              </ul>
+
+              <h4 id="release-1-1-other" style="scroll-margin-top: 80px;">{% trans %}Other improvements{% endtrans %}</h4>
+              <ul>
+                <li>{% trans %}Reduce startup delays when restoring sessions, history, and panels.{% endtrans %}</li>
+                <li>{% trans %}Make update checks more responsive and prevent them from delaying window closure.{% endtrans %}</li>
+                <li>{% trans %}Add{% endtrans %} <a href="{{ pathto('userguide/interface') }}#help">{% trans %}Help &gt; App Diagnostics{% endtrans %}</a> {% trans %}with a report that can be copied when asking for help. Show operating system details in About SpeedCrunch.{% endtrans %}</li>
+                <li>{% trans %}Fix a crash when closing windows with certain panels open.{% endtrans %}</li>
+                <li>{% trans %}Add portable macOS ZIP packages that keep settings and sessions beside the app in a{% endtrans %} <code>SpeedCrunch-data</code> {% trans %}folder.{% endtrans %}</li>
+                <li>{% trans %}Set the default macOS minimum version to 14.4 on Apple Silicon.{% endtrans %}</li>
+              </ul>
+            </section>
+            <hr/>
+            <section aria-labelledby="contributors-1-1">
+              <h3 id="contributors-1-1" style="scroll-margin-top: 80px;">{% trans %}Contributors{% endtrans %}</h3>
+              <p>{% trans %}Thank you to everyone who contributed to SpeedCrunch 1.1.{% endtrans %}</p>
+              <p>Helder Correia, Vitaly Zaitsev, Rodrigo Pedra, Pedro Montes Alcalde, Francis Tseng, Antonio Mannella, Benjamin Robin, Brian Hale, D.J.L. Sales, Matthias Prager, Rafael Fraga, Theodore R. Smith, @ddidderr, @FrankMountainFace, @jetp250, @Matth7878, @nfshr, @pandora1986, @playerofgames, @rafa4mat, @RedNova84, @Sacryn, @tosione.</p>
+            </section>
+          </div>
+        </div>
       </section>
       <hr/>
 
