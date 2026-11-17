@@ -75,6 +75,23 @@ QJsonObject serializeCustomKeypad(const Settings::CustomKeypad& keypad)
     return json;
 }
 
+QString customKeypadJson(const Settings::CustomKeypad& keypad)
+{
+    const QString json = QString::fromUtf8(
+        QJsonDocument(serializeCustomKeypad(keypad)).toJson(QJsonDocument::Compact));
+    QString escaped;
+    escaped.reserve(json.size());
+    // ASCII survives older INI readers that interpret UTF-8 bytes as Latin-1.
+    // Escaping UTF-16 code units also preserves supplementary characters as surrogate pairs.
+    for (QChar character : json) {
+        if (character.unicode() > 0x7f)
+            escaped += QStringLiteral("\\u%1").arg(uint(character.unicode()), 4, 16, QLatin1Char('0'));
+        else
+            escaped += character;
+    }
+    return escaped;
+}
+
 bool deserializeCustomKeypad(const QJsonObject& json, Settings::CustomKeypad* keypad)
 {
     if (!keypad || !json.contains(QStringLiteral("rows")) || !json.contains(QStringLiteral("columns")))
@@ -822,7 +839,7 @@ void Settings::save()
         || keypadMode == KeypadModeCustom);
     settings->setValue(key + QLatin1String("KeypadZoomPercent"), keypadZoomPercent);
     settings->setValue(key + QLatin1String("CustomKeypad"),
-        QString::fromUtf8(QJsonDocument(serializeCustomKeypad(customKeypad)).toJson(QJsonDocument::Compact)));
+        customKeypadJson(customKeypad));
     settings->setValue(key + QLatin1String("StatusBarVisible"), statusBarVisible);
     settings->setValue(key + QLatin1String("MenuBarVisible"), menuBarVisible);
     settings->setValue(key + QLatin1String("VariablesDockVisible"), variablesDockVisible);

@@ -33,6 +33,7 @@ private slots:
     void keypad_power_button_uses_exponent_label_but_inserts_caret();
     void keypad_symbol_labels_use_font_with_their_glyphs();
     void custom_keypad_replaces_old_symbol_labels_on_load();
+    void custom_keypad_storage_is_ascii_and_preserves_unicode();
     void keypad_nth_root_button_inserts_root_data();
     void keypad_nth_root_button_inserts_root();
     void keypad_zoom_round_trip_restores_button_sizes_data();
@@ -731,6 +732,48 @@ void TestKeypadUi::custom_keypad_replaces_old_symbol_labels_on_load()
     QCOMPARE(buttons.at(3).label, backspace);
     QCOMPARE(buttons.at(4).label, QStringLiteral("x^y"));
     QCOMPARE(buttons.at(5).label, QStringLiteral("root"));
+}
+
+void TestKeypadUi::custom_keypad_storage_is_ascii_and_preserves_unicode()
+{
+    Settings* settings = Settings::instance();
+    const QString label = QString::fromUtf8("÷ × − π √ ñ 漢字 😀");
+    const QString text = QString::fromUtf8("π + \"ñ\" + \\u00f7\n😀");
+    const QString settingKey = QStringLiteral("SpeedCrunch/Layout/CustomKeypad");
+    const QString fileName = Settings::getConfigPath() + QStringLiteral("/SpeedCrunch.ini");
+
+    // Seed the old UTF-8 format to check that existing layouts still load.
+    const QJsonObject legacy{{QStringLiteral("rows"), 1}, {QStringLiteral("columns"), 1},
+        {QStringLiteral("buttons"), QJsonArray{QJsonObject{
+            {QStringLiteral("row"), 0}, {QStringLiteral("column"), 0},
+            {QStringLiteral("label"), label}, {QStringLiteral("text"), text},
+            {QStringLiteral("action"), int(Settings::CustomKeypadActionInsertText)}}}}};
+    {
+        QSettings persisted(fileName, QSettings::IniFormat);
+        persisted.setValue(settingKey, QString::fromUtf8(QJsonDocument(legacy).toJson(QJsonDocument::Compact)));
+        persisted.sync();
+        QCOMPARE(persisted.status(), QSettings::NoError);
+    }
+    settings->load();
+    for (int cycle = 0; cycle < 5; ++cycle) {
+        QCOMPARE(settings->customKeypad.buttons.size(), 1);
+        QCOMPARE(settings->customKeypad.buttons.first().label, label);
+        QCOMPARE(settings->customKeypad.buttons.first().text, text);
+        settings->save();
+        {
+            QSettings persisted(fileName, QSettings::IniFormat);
+            const QString stored = persisted.value(settingKey).toString();
+            QVERIFY(!stored.isEmpty());
+            for (QChar character : stored)
+                QVERIFY(character.unicode() <= 0x7f);
+            QCOMPARE(QJsonDocument::fromJson(stored.toUtf8()).object(), legacy);
+            // An ASCII payload is unchanged by a Latin-1 interpretation of its bytes.
+            QCOMPARE(QString::fromLatin1(stored.toUtf8()), stored);
+        }
+        settings->load();
+    }
+    QCOMPARE(settings->customKeypad.buttons.first().label, label);
+    QCOMPARE(settings->customKeypad.buttons.first().text, text);
 }
 
 void TestKeypadUi::keypad_nth_root_button_inserts_root_data()

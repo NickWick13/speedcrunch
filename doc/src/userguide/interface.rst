@@ -140,6 +140,7 @@ column order between launches, including for panels that are hidden.
     dialog and leaves the current layout selected.
 
     Custom keypad settings are saved and restored automatically.
+    Unicode labels and inserted text are preserved.
 
     You can also right-click directly on the keypad to choose a layout,
     open :guilabel:`Edit Custom Keypad`, or change the zoom level.
