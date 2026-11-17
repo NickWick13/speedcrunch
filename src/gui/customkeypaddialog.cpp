@@ -76,6 +76,9 @@ CustomKeypadDialog::CustomKeypadDialog(const Settings::CustomKeypad& keypad, QWi
     setWindowTitle(tr("Custom Keypad"));
     resize(860, 520);
 
+    m_rowsSpin->setObjectName(QStringLiteral("CustomKeypadRows"));
+    m_columnsSpin->setObjectName(QStringLiteral("CustomKeypadColumns"));
+    m_table->setObjectName(QStringLiteral("CustomKeypadTable"));
     m_rowsSpin->setRange(1, 20);
     m_columnsSpin->setRange(1, 20);
 
@@ -101,13 +104,16 @@ CustomKeypadDialog::CustomKeypadDialog(const Settings::CustomKeypad& keypad, QWi
     topControlsLayout->addWidget(m_rowsSpin, 0, 1);
     topControlsLayout->addWidget(new QLabel(tr("Columns:"), this), 0, 2);
     topControlsLayout->addWidget(m_columnsSpin, 0, 3);
-    topControlsLayout->addWidget(new QLabel(tr("Copy preset:"), this), 0, 4);
+    topControlsLayout->addWidget(new QLabel(tr("Preset:"), this), 0, 4);
     QComboBox* presetCombo = new QComboBox(this);
+    presetCombo->setObjectName(QStringLiteral("CustomKeypadPreset"));
     presetCombo->addItem(tr("Basic"), PresetLayoutBasicWide);
     presetCombo->addItem(tr("Scientific (wide)"), PresetLayoutScientificWide);
     presetCombo->addItem(tr("Scientific (narrow)"), PresetLayoutScientificNarrow);
     topControlsLayout->addWidget(presetCombo, 0, 5);
-    auto* presetApplyButton = new QPushButton(tr("Apply"), this);
+    auto* presetApplyButton = new QPushButton(tr("Copy Preset"), this);
+    presetApplyButton->setObjectName(QStringLiteral("CopyKeypadPreset"));
+    presetApplyButton->setAutoDefault(false);
     topControlsLayout->addWidget(presetApplyButton, 0, 6);
     topControlsLayout->setColumnStretch(7, 1);
 
@@ -115,12 +121,25 @@ CustomKeypadDialog::CustomKeypadDialog(const Settings::CustomKeypad& keypad, QWi
     m_table->setAlternatingRowColors(true);
     m_table->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_table->setSelectionMode(QAbstractItemView::SingleSelection);
+    m_table->setTextElideMode(Qt::ElideRight);
     m_table->verticalHeader()->setVisible(false);
-    m_table->horizontalHeader()->setStretchLastSection(true);
+    auto* header = m_table->horizontalHeader();
+    header->setSectionResizeMode(ColumnIndexRow, QHeaderView::ResizeToContents);
+    header->setSectionResizeMode(ColumnIndexColumn, QHeaderView::ResizeToContents);
+    header->setSectionResizeMode(ColumnIndexLabel, QHeaderView::Interactive);
+    header->setSectionResizeMode(ColumnIndexAction, QHeaderView::ResizeToContents);
+    header->setSectionResizeMode(ColumnIndexText, QHeaderView::Stretch);
+    m_table->setColumnWidth(ColumnIndexLabel,
+        m_table->fontMetrics().horizontalAdvance(QStringLiteral("MMMMMMMMMMMM")) + 24);
 
     QStringList labels;
     labels << tr("Row") << tr("Column") << tr("Label") << tr("Behavior") << tr("Text");
     m_table->setHorizontalHeaderLabels(labels);
+    connect(m_table, &QTableWidget::itemChanged, this, [](QTableWidgetItem* item) {
+        if ((item->column() == ColumnIndexLabel || item->column() == ColumnIndexText)
+                && item->toolTip() != item->text())
+            item->setToolTip(item->text());
+    });
 
     QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, this);
     connect(buttons, &QDialogButtonBox::accepted, this, &QDialog::accept);
@@ -138,7 +157,14 @@ CustomKeypadDialog::CustomKeypadDialog(const Settings::CustomKeypad& keypad, QWi
 
     QVBoxLayout* rootLayout = new QVBoxLayout(this);
     rootLayout->addLayout(topControlsLayout);
+    auto* presetHint = new QLabel(tr("Click Copy Preset to replace the table with the selected layout."), this);
+    presetHint->setWordWrap(true);
+    rootLayout->addWidget(presetHint);
     rootLayout->addWidget(m_table);
+    auto* editingHint = new QLabel(tr("Double-click a Label or Text cell to edit it. Label is shown on the button. "
+                                     "Text is inserted into the expression."), this);
+    editingHint->setWordWrap(true);
+    rootLayout->addWidget(editingHint);
     rootLayout->addWidget(buttons);
 
     buildTableFromCells();
@@ -226,8 +252,6 @@ void CustomKeypadDialog::buildTableFromCells()
             });
         }
     }
-
-    m_table->resizeColumnsToContents();
 }
 
 void CustomKeypadDialog::rebuildCellStorage(int rows, int columns)
@@ -277,9 +301,8 @@ void CustomKeypadDialog::applyPresetLayout(CustomKeypadDialog::PresetLayout pres
 
 QList<CustomKeypadDialog::Cell> CustomKeypadDialog::readCellsFromTable() const
 {
-    const int rows = m_rowsSpin->value();
-    const int columns = m_columnsSpin->value();
-    const int entries = rows * columns;
+    // A spin box can already show the new size while the table still holds the old grid.
+    const int entries = m_currentRows * m_currentColumns;
     QList<Cell> cells(entries);
 
     for (int index = 0; index < entries; ++index) {

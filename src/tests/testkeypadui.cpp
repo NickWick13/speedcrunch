@@ -2,6 +2,9 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "mainwindowtesthelpers.h"
+#include "gui/customkeypaddialog.h"
+
+#include <QTableWidget>
 
 using namespace MainWindowTestHelpers;
 
@@ -16,6 +19,12 @@ private slots:
     void classic_keypad_boundary_restores_nested_panes();
     void keypad_buttons_use_custom_themed_tooltips();
     void custom_keypad_action_stays_checked_after_dialog_accepts();
+    void custom_keypad_resize_preserves_cells_data();
+    void custom_keypad_resize_preserves_cells();
+    void custom_keypad_long_values_keep_columns_visible_data();
+    void custom_keypad_long_values_keep_columns_visible();
+    void custom_keypad_copy_preset_requires_explicit_click_data();
+    void custom_keypad_copy_preset_requires_explicit_click();
     void keypad_power_button_uses_exponent_label_but_inserts_caret();
     void keypad_symbol_labels_use_font_with_their_glyphs();
     void custom_keypad_replaces_old_symbol_labels_on_load();
@@ -305,6 +314,167 @@ void TestKeypadUi::custom_keypad_action_stays_checked_after_dialog_accepts()
     QCOMPARE(settings->keypadMode, Settings::KeypadModeCustom);
     QVERIFY(customAction->isChecked());
     QVERIFY(!basicAction->isChecked());
+}
+
+void TestKeypadUi::custom_keypad_resize_preserves_cells_data()
+{
+    QTest::addColumn<int>("rows");
+    QTest::addColumn<int>("columns");
+    QTest::newRow("shrink-columns") << 4 << 4;
+    QTest::newRow("single-column") << 4 << 1;
+    QTest::newRow("shrink-rows") << 1 << 5;
+    QTest::newRow("single-cell") << 1 << 1;
+    QTest::newRow("grow-columns") << 4 << 8;
+    QTest::newRow("grow-rows") << 7 << 5;
+    QTest::newRow("grow-both") << 7 << 8;
+}
+
+void TestKeypadUi::custom_keypad_resize_preserves_cells()
+{
+    QFETCH(int, rows);
+    QFETCH(int, columns);
+    auto original = Settings::defaultCustomKeypad();
+    CustomKeypadDialog dialog(original);
+    auto* table = dialog.findChild<QTableWidget*>(QStringLiteral("CustomKeypadTable"));
+    auto* rowCount = dialog.findChild<QSpinBox*>(QStringLiteral("CustomKeypadRows"));
+    auto* columnCount = dialog.findChild<QSpinBox*>(QStringLiteral("CustomKeypadColumns"));
+    QVERIFY(table);
+    QVERIFY(rowCount);
+    QVERIFY(columnCount);
+
+    // Keep edits from both ends of the old grid when their positions still fit.
+    original.buttons.first().label = QStringLiteral("Square");
+    original.buttons.first().text = QStringLiteral("^2");
+    original.buttons.last().label = QString::fromUtf8("π");
+    original.buttons.last().text = QStringLiteral("pi");
+    table->item(0, 2)->setText(original.buttons.first().label);
+    table->item(0, 4)->setText(original.buttons.first().text);
+    table->item(19, 2)->setText(original.buttons.last().label);
+    table->item(19, 4)->setText(original.buttons.last().text);
+
+    columnCount->setValue(columns);
+    rowCount->setValue(rows);
+    const auto resized = dialog.customKeypad();
+    QCOMPARE(resized.rows, rows);
+    QCOMPARE(resized.columns, columns);
+    QCOMPARE(table->rowCount(), rows * columns);
+    int kept = 0;
+    for (const auto& button : original.buttons) {
+        if (button.row >= rows || button.column >= columns)
+            continue;
+        QVERIFY(kept < resized.buttons.size());
+        const auto& actual = resized.buttons.at(kept++);
+        QCOMPARE(actual.row, button.row);
+        QCOMPARE(actual.column, button.column);
+        QCOMPARE(actual.label, button.label);
+        QCOMPARE(actual.text, button.text);
+        QCOMPARE(actual.action, button.action);
+    }
+    // New positions must stay empty rather than copy cells from another row.
+    QCOMPARE(resized.buttons.size(), kept);
+
+    columnCount->setValue(columns + 1);
+    columnCount->setValue(columns);
+    QCOMPARE(dialog.customKeypad().buttons.size(), kept);
+}
+
+void TestKeypadUi::custom_keypad_long_values_keep_columns_visible_data()
+{
+    QTest::addColumn<bool>("rightToLeft");
+    QTest::addColumn<double>("fontScale");
+    QTest::newRow("left-to-right") << false << 1.0;
+    QTest::newRow("right-to-left") << true << 1.0;
+    QTest::newRow("large-font") << false << 1.5;
+    QTest::newRow("large-font-right-to-left") << true << 1.5;
+}
+
+void TestKeypadUi::custom_keypad_long_values_keep_columns_visible()
+{
+    QFETCH(bool, rightToLeft);
+    QFETCH(double, fontScale);
+    auto keypad = Settings::defaultCustomKeypad();
+    const QString longLabel = QString::fromUtf8("÷π").repeated(500);
+    const QString longText = QStringLiteral("sqrt(123456789)").repeated(500);
+    keypad.buttons.first().label = longLabel;
+    keypad.buttons.first().text = longText;
+    CustomKeypadDialog dialog(keypad);
+    dialog.setLayoutDirection(rightToLeft ? Qt::RightToLeft : Qt::LeftToRight);
+    QFont font = dialog.font();
+    font.setPointSizeF(font.pointSizeF() * fontScale);
+    dialog.setFont(font);
+    dialog.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&dialog));
+    auto* table = dialog.findChild<QTableWidget*>(QStringLiteral("CustomKeypadTable"));
+    QVERIFY(table);
+    for (int column = 0; column < table->columnCount(); ++column) {
+        const QRect cell = table->visualRect(table->model()->index(0, column));
+        QVERIFY2(table->viewport()->rect().contains(cell), qPrintable(QString::number(column)));
+    }
+    QCOMPARE(table->horizontalScrollBar()->maximum(), 0);
+    QCOMPARE(table->item(0, 2)->toolTip(), longLabel);
+    QCOMPARE(table->item(0, 4)->toolTip(), longText);
+
+    const QString edited = longText + QStringLiteral("+1");
+    table->item(0, 4)->setText(edited);
+    QCOMPARE(table->item(0, 4)->toolTip(), edited);
+    QCOMPARE(dialog.customKeypad().buttons.first().label, longLabel);
+    QCOMPARE(dialog.customKeypad().buttons.first().text, edited);
+
+    const int labelWidth = table->columnWidth(2);
+    dialog.findChild<QSpinBox*>(QStringLiteral("CustomKeypadColumns"))->setValue(4);
+    QCOMPARE(table->columnWidth(2), labelWidth);
+}
+
+void TestKeypadUi::custom_keypad_copy_preset_requires_explicit_click_data()
+{
+    QTest::addColumn<int>("layoutMode");
+    QTest::addColumn<int>("presetIndex");
+    QTest::newRow("basic") << int(Keypad::LayoutModeBasicWide) << 0;
+    QTest::newRow("scientific-wide") << int(Keypad::LayoutModeScientificWide) << 1;
+    QTest::newRow("scientific-narrow") << int(Keypad::LayoutModeScientificNarrow) << 2;
+}
+
+void TestKeypadUi::custom_keypad_copy_preset_requires_explicit_click()
+{
+    QFETCH(int, layoutMode);
+    QFETCH(int, presetIndex);
+    Settings::CustomKeypad keypad;
+    keypad.rows = 1;
+    keypad.columns = 1;
+    keypad.buttons = {{0, 0, QStringLiteral("Saved"), QStringLiteral("1"),
+                      Settings::CustomKeypadActionInsertText}};
+    CustomKeypadDialog dialog(keypad);
+    auto* preset = dialog.findChild<QComboBox*>(QStringLiteral("CustomKeypadPreset"));
+    auto* copy = dialog.findChild<QPushButton*>(QStringLiteral("CopyKeypadPreset"));
+    auto* table = dialog.findChild<QTableWidget*>(QStringLiteral("CustomKeypadTable"));
+    QVERIFY(preset);
+    QVERIFY(copy);
+    QVERIFY(table);
+    QVERIFY(!copy->autoDefault());
+    table->item(0, 2)->setText(QStringLiteral("Edited"));
+    preset->setCurrentIndex(presetIndex);
+    QCOMPARE(dialog.customKeypad().rows, 1);
+    QCOMPARE(dialog.customKeypad().columns, 1);
+    QCOMPARE(dialog.customKeypad().buttons.first().label, QStringLiteral("Edited"));
+
+    copy->click();
+    int rows = 0;
+    int columns = 0;
+    const auto expected = Keypad::presetCustomButtons(static_cast<Keypad::LayoutMode>(layoutMode),
+        Settings::instance()->radixCharacter(), &rows, &columns);
+    const auto copied = dialog.customKeypad();
+    QCOMPARE(copied.rows, rows);
+    QCOMPARE(copied.columns, columns);
+    QCOMPARE(copied.buttons.size(), expected.size());
+    for (int index = 0; index < expected.size(); ++index) {
+        const auto& actual = copied.buttons.at(index);
+        const auto& button = expected.at(index);
+        QCOMPARE(actual.row, button.row);
+        QCOMPARE(actual.column, button.column);
+        QCOMPARE(actual.label, button.label);
+        QCOMPARE(actual.text, button.text);
+        QCOMPARE(int(actual.action), button.action);
+    }
 }
 
 void TestKeypadUi::keypad_power_button_uses_exponent_label_but_inserts_caret()

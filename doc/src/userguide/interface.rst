@@ -118,9 +118,19 @@ column order between launches, including for panels that are hidden.
     * The button behavior: ``Insert text``, ``Backspace``, ``Clear expression``, or ``Evaluate expression``
     * The text to insert (for ``Insert text`` behavior)
 
-    The dialog also includes a ``Copy preset`` selector with an :guilabel:`Apply` button,
-    so you can start from the ``Basic``, ``Scientific (wide)``, or
-    ``Scientific (narrow)`` layout and then customize it.
+    To start from a built-in layout, choose ``Basic``, ``Scientific (wide)``, or
+    ``Scientific (narrow)`` in the :guilabel:`Preset` selector, then click
+    :guilabel:`Copy Preset`. This replaces the table, including any edits you
+    have made. Selecting a preset alone does not change the table.
+
+    Double-click a :guilabel:`Label` or :guilabel:`Text` cell to edit it. The
+    label is what you see on the button, while the text is what the button
+    inserts into the expression. Long values are shortened in the table.
+    Hover over a cell to see its full value, or open it for editing.
+    Resizing the grid keeps buttons at positions that still fit. Positions
+    outside the new grid are removed, and new positions start empty.
+    Click :guilabel:`OK` to use your layout, or :guilabel:`Cancel` to discard
+    the changes made in the dialog.
 
     Custom keypad settings are saved and restored automatically.
 
