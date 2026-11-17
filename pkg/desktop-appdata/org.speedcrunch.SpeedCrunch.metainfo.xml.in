@@ -71,6 +71,17 @@
   <url type="help">https://speedcrunch.org/contents.html</url>
 
   <releases>
+    <release version="1.2.0" date="2026-11-17">
+      <description>
+        <ul>
+          <_li>Start much faster on Windows, even with many saved tabs.</_li>
+          <_li>Set your own keyboard shortcuts.</_li>
+          <_li>Choose Classic, Modern, or Hybrid style presets.</_li>
+          <_li>Choose what happens when launching SpeedCrunch again: return to an open window, open a new window, or add a tab.</_li>
+          <_li>Find answers to common questions in the new FAQ in the user manual.</_li>
+        </ul>
+      </description>
+    </release>
     <release version="1.1" date="2026-10-20"/>
     <release version="1.0" date="2026-10-04"/>
     <release version="0.12" date="2016-11-29"/>

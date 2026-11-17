@@ -1,5 +1,105 @@
 # Changelog
 
+## 1.2.0
+
+### Highlights
+
+- SpeedCrunch starts much faster on Windows, even with many saved tabs.
+- Set your own keyboard shortcuts for common actions.
+- Choose between Classic, Modern, or Hybrid to change the app's style in one step.
+- Choose what happens when you launch SpeedCrunch while it is already running:
+  return to an open window, open a new window, or add a tab.
+- Find answers to common questions in the user manual's new FAQ.
+
+### Constants and units
+
+- Change the default constant search shortcut to `Ctrl+K` (`Cmd+K` on macOS).
+- Fix values shown when multiplying or dividing prefixed units, including
+  angular rates.
+- Fix unit grouping in division when the first value has units. For example,
+  `299792458[m/s] / 10[MHz]` gives `29.9792458 m`. This also works with
+  variables and function results.
+- Cancel matching units correctly and show time results in time units,
+  such as `J/W` as `s`.
+- Keep upper and lower case unit symbols distinct, such as `kT` and `kt`.
+
+### Input
+
+- Read decimal and grouping marks using the selected number format, even
+  when grouping is turned off for display.
+- Keep commas and dots as typed or pasted, and fix grouped hexadecimal
+  input such as `0xAB CD`.
+- Report errors for invalid number groups such as `1,2,3` or `1,,234`.
+- Allow negative numbers after `+`, `×`, and `/`, and let `3--2` give `5`.
+  Drop support for `--` for unit conversion.
+- Return focus to the correct input pane after searching a panel or
+  inserting a constant.
+
+### Results
+
+- Keep decimal values correct in the interpreted expression.
+- Keep the scroll-to-bottom button clear of scrollbars.
+- Shorten the Complex Form menu labels and use clearer names for rounding
+  up and down.
+
+### Sessions and settings
+
+- Add **Settings > Keyboard Shortcuts** to change shortcuts, with conflict
+  checks and saved choices that apply to all windows.
+- Add **Edit > Clear History**, with `Ctrl+L` (`Cmd+L` on macOS), to clear
+  calculations and unfinished input while keeping session definitions.
+  Add an option to skip its confirmation dialog.
+- Add **Session > Reset** to also clear session variables, functions, and
+  units. Global user definitions are kept.
+- Choose what happens when launching SpeedCrunch again: activate an open
+  window, open a new window, or open a new tab.
+- Close only the chosen window. Quit when the last window closes, and close
+  a window when its last tab closes if other windows are still open.
+- Give new tabs unique names across all open windows.
+- Keep saved functions that use custom units after a restart.
+- Fix window size resets on Wayland and a crash when resetting panel layouts.
+
+### Appearance and panels
+
+- Add **Classic**, **Modern**, and **Hybrid** style presets. Use Classic
+  for new installations and after resetting settings. Keep the saved
+  appearance when upgrading.
+- Use **One Dark** as the default color theme.
+- Add **Follow System**, **Light**, and **Dark** choices for system controls.
+- Let tooltips and popup lists use the system style or the SpeedCrunch theme.
+- Fix dark mode for dialogs and title bars on Windows 10.
+- Fix missing symbols and text on Windows, and make units easier to read
+  in the constants popup.
+- Allow bold and italic font styles even when a font has only a regular style.
+- Make the text cursor visible in **User Definitions** with any theme.
+- Keep panel widths after restarts and preserve window and panel sizes
+  when changing the layout.
+- Open Constants, Functions, and Formula Book panels wide enough to show
+  their content when screen space allows.
+- Fit Bitfield bits and buttons into narrow panels without overlapping rows.
+- Fix menu spacing and show the menu overflow button when space is limited.
+
+### Keypad
+
+- Use **Scientific (wide)** as the default layout for new installations
+  and after resetting settings.
+- Add a 75% zoom level.
+- Add **Settings > Edit Custom Keypad** and the same command to the keypad's
+  right-click menu. Choosing **Custom** now selects the saved layout.
+- Fix a crash when making a custom grid smaller and make long labels
+  easier to edit.
+- Preserve Unicode labels and inserted text when saving custom layouts.
+- Use `DEL`, `C`, `x^y`, and `root` labels to avoid missing symbols.
+  Update older custom layouts with these labels too.
+
+### Other improvements
+
+- Speed up startup and history display, especially with many saved tabs.
+- Check for updates at most once a week. Manual checks remain available
+  at any time.
+- Fix a crash when updating menus.
+- Add a FAQ to the user manual.
+
 ## 1.1.0
 
 ### Functions
