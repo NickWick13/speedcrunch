@@ -19,6 +19,11 @@ private slots:
     void classic_keypad_boundary_restores_nested_panes();
     void keypad_buttons_use_custom_themed_tooltips();
     void custom_keypad_action_stays_checked_after_dialog_accepts();
+    void custom_keypad_editor_has_a_separate_settings_action();
+    void custom_keypad_selection_does_not_open_the_editor();
+    void custom_keypad_editor_accept_and_cancel_data();
+    void custom_keypad_editor_accept_and_cancel();
+    void custom_keypad_context_menu_offers_the_editor();
     void custom_keypad_resize_preserves_cells_data();
     void custom_keypad_resize_preserves_cells();
     void custom_keypad_long_values_keep_columns_visible_data();
@@ -314,6 +319,157 @@ void TestKeypadUi::custom_keypad_action_stays_checked_after_dialog_accepts()
     QCOMPARE(settings->keypadMode, Settings::KeypadModeCustom);
     QVERIFY(customAction->isChecked());
     QVERIFY(!basicAction->isChecked());
+}
+
+void TestKeypadUi::custom_keypad_editor_has_a_separate_settings_action()
+{
+    MainWindow window(false);
+    auto* settingsMenu = menuWithTitle(window.menuBar(), QStringLiteral("Se&ttings"));
+    auto* edit = window.findChild<QAction*>(QStringLiteral("EditCustomKeypadAction"));
+    QVERIFY(settingsMenu);
+    QVERIFY(edit);
+    QVERIFY(!edit->isCheckable());
+    const auto entries = settingsMenu->actions();
+    int shortcuts = -1;
+    for (int index = 0; index < entries.size(); ++index) {
+        if (entries.at(index)->property("keyBindingId").toString() == QLatin1String("settingsKeyBindings"))
+            shortcuts = index;
+    }
+    QVERIFY(shortcuts >= 0);
+    QCOMPARE(entries.indexOf(edit), shortcuts + 1);
+    QVERIFY(shortcuts + 2 < entries.size());
+    QVERIFY(entries.at(shortcuts + 2)->isSeparator());
+    auto* appearance = window.findChild<QMenu*>(QStringLiteral("KeypadAppearanceMenu"));
+    QVERIFY(appearance);
+    QVERIFY(!appearance->actions().contains(edit));
+    auto* custom = keypadModeAction(&window, Settings::KeypadModeCustom);
+    QVERIFY(custom);
+    QCOMPARE(custom->text(), QStringLiteral("&Custom"));
+    QVERIFY(custom->isCheckable());
+}
+
+void TestKeypadUi::custom_keypad_selection_does_not_open_the_editor()
+{
+    MainWindowStateGuard guard;
+    guard.settings->keypadMode = Settings::KeypadModeBasicWide;
+    guard.settings->keypadVisible = true;
+    guard.settings->customKeypad = {1, 1, {{0, 0, QStringLiteral("Saved"), QStringLiteral("42"),
+        Settings::CustomKeypadActionInsertText}}};
+    MainWindow window;
+    window.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&window));
+    auto* custom = keypadModeAction(&window, Settings::KeypadModeCustom);
+    QVERIFY(custom);
+    bool openedEditor = false;
+    QTimer dialogWatchdog;
+    connect(&dialogWatchdog, &QTimer::timeout, &window, [&]() {
+        if (auto* dialog = qobject_cast<CustomKeypadDialog*>(QApplication::activeModalWidget())) {
+            openedEditor = true;
+            dialog->reject();
+        }
+    });
+    dialogWatchdog.start(0);
+    custom->trigger();
+    QCoreApplication::sendPostedEvents(nullptr, QEvent::DeferredDelete);
+    QCoreApplication::processEvents();
+    QVERIFY(!openedEditor);
+    QVERIFY(custom->isChecked());
+    auto* keypad = window.findChild<Keypad*>();
+    QVERIFY(keypad);
+    QVERIFY(keypadButtonWithText(keypad, QStringLiteral("Saved")));
+
+    custom->trigger();
+    QCoreApplication::processEvents();
+    QVERIFY(!openedEditor);
+    QCOMPARE(window.findChild<Keypad*>(), keypad);
+    QCOMPARE(guard.settings->customKeypad.buttons.first().text, QStringLiteral("42"));
+}
+
+void TestKeypadUi::custom_keypad_editor_accept_and_cancel_data()
+{
+    QTest::addColumn<int>("mode");
+    QTest::addColumn<bool>("accept");
+    for (bool accept : {false, true}) {
+        const QByteArray suffix = accept ? "-accept" : "-cancel";
+        QTest::newRow(QByteArray("disabled").append(suffix).constData()) << int(Settings::KeypadModeDisabled) << accept;
+        QTest::newRow(QByteArray("basic").append(suffix).constData()) << int(Settings::KeypadModeBasicWide) << accept;
+        QTest::newRow(QByteArray("scientific").append(suffix).constData()) << int(Settings::KeypadModeScientificWide) << accept;
+        QTest::newRow(QByteArray("custom").append(suffix).constData()) << int(Settings::KeypadModeCustom) << accept;
+    }
+}
+
+void TestKeypadUi::custom_keypad_editor_accept_and_cancel()
+{
+    QFETCH(int, mode);
+    QFETCH(bool, accept);
+    MainWindowStateGuard guard;
+    guard.settings->keypadMode = static_cast<Settings::KeypadMode>(mode);
+    guard.settings->keypadVisible = mode != Settings::KeypadModeDisabled;
+    guard.settings->customKeypad = {1, 1, {{0, 0, QStringLiteral("Saved"), QStringLiteral("42"),
+        Settings::CustomKeypadActionInsertText}}};
+    MainWindow window;
+    window.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&window));
+    QPointer<Keypad> previous = window.findChild<Keypad*>();
+    auto* edit = window.findChild<QAction*>(QStringLiteral("EditCustomKeypadAction"));
+    QVERIFY(edit);
+    bool openedEditor = false;
+    QTimer::singleShot(0, &window, [&]() {
+        auto* modal = qobject_cast<QDialog*>(QApplication::activeModalWidget());
+        const auto close = qScopeGuard([&]() { if (modal && modal->isVisible()) modal->reject(); });
+        auto* dialog = qobject_cast<CustomKeypadDialog*>(modal);
+        QVERIFY(dialog);
+        openedEditor = true;
+        QCOMPARE(dialog->parentWidget(), &window);
+        auto* table = dialog->findChild<QTableWidget*>(QStringLiteral("CustomKeypadTable"));
+        QVERIFY(table);
+        QCOMPARE(table->item(0, 2)->text(), QStringLiteral("Saved"));
+        table->item(0, 2)->setText(QStringLiteral("Edited"));
+        table->item(0, 4)->setText(QStringLiteral("6*7"));
+        if (accept)
+            dialog->accept();
+    });
+    edit->trigger();
+    QCoreApplication::sendPostedEvents(nullptr, QEvent::DeferredDelete);
+    QVERIFY(openedEditor);
+    const auto selectedMode = accept ? Settings::KeypadModeCustom : static_cast<Settings::KeypadMode>(mode);
+    QVERIFY(keypadModeAction(&window, selectedMode)->isChecked());
+    QCOMPARE(guard.settings->keypadMode, selectedMode);
+    const auto& saved = guard.settings->customKeypad.buttons.first();
+    QCOMPARE(saved.label, accept ? QStringLiteral("Edited") : QStringLiteral("Saved"));
+    QCOMPARE(saved.text, accept ? QStringLiteral("6*7") : QStringLiteral("42"));
+    if (accept) {
+        auto* keypad = window.findChild<Keypad*>();
+        QVERIFY(keypad);
+        QVERIFY(keypadButtonWithText(keypad, QStringLiteral("Edited")));
+        QVERIFY(previous.isNull());
+    } else {
+        QCOMPARE(window.findChild<Keypad*>(), previous.data());
+    }
+}
+
+void TestKeypadUi::custom_keypad_context_menu_offers_the_editor()
+{
+    MainWindowStateGuard guard;
+    guard.settings->keypadMode = Settings::KeypadModeBasicWide;
+    guard.settings->keypadVisible = true;
+    MainWindow window;
+    window.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&window));
+    auto* edit = window.findChild<QAction*>(QStringLiteral("EditCustomKeypadAction"));
+    QVERIFY(edit);
+    bool openedMenu = false;
+    QTimer::singleShot(0, &window, [&]() {
+        auto* menu = qobject_cast<QMenu*>(QApplication::activePopupWidget());
+        QVERIFY(menu);
+        const auto close = qScopeGuard([&]() { menu->close(); });
+        openedMenu = true;
+        QVERIFY(menu->actions().contains(edit));
+        QVERIFY(!edit->isCheckable());
+    });
+    QVERIFY(QMetaObject::invokeMethod(&window, "showKeypadContextMenu", Qt::DirectConnection,
+                                     Q_ARG(QPoint, QPoint(0, 0))));
+    QVERIFY(openedMenu);
 }
 
 void TestKeypadUi::custom_keypad_resize_preserves_cells_data()

@@ -103,6 +103,7 @@ private slots:
     void clearSession();
     void resetAllSettings();
     void showKeyBindingsDialog();
+    void editCustomKeypad();
     void copyResultToClipboard();
     void decreaseDisplayFontPointSize();
     void decreaseOpacity();
@@ -436,7 +437,6 @@ private:
     void restoreVisibleSessionViewports();
     void saveSessionLayout(bool captureCurrentViewport = true, bool captureEditorState = false);
     void flushPendingSessionSave();
-    bool configureCustomKeypad();
     void updateKeypadModeActionState();
     void setActionsText();
     void updateKeypadDisabledActionText();
@@ -602,6 +602,7 @@ private:
         QAction* settingsBehaviorNumberFormat;
         QAction* settingsResetAll;
         QAction* settingsKeyBindings;
+        QAction* settingsCustomKeypad;
         QAction* settingsBehaviorResultSlots;
         QAction* settingsBehaviorUpDownArrowNever;
         QAction* settingsBehaviorUpDownArrowAlways;

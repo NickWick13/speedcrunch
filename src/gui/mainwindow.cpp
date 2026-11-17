@@ -4249,6 +4249,8 @@ void MainWindow::createActions()
     m_actions.settingsResetAll = createKeyBindingAction(QStringLiteral("settingsResetAll"));
     m_actions.settingsResetAll->setObjectName(QStringLiteral("ResetAllSettingsAction"));
     m_actions.settingsKeyBindings = createKeyBindingAction(QStringLiteral("settingsKeyBindings"));
+    m_actions.settingsCustomKeypad = createKeyBindingAction(QStringLiteral("settingsCustomKeypad"));
+    m_actions.settingsCustomKeypad->setObjectName(QStringLiteral("EditCustomKeypadAction"));
     m_actions.settingsDisplayZoomIn = createKeyBindingAction(QStringLiteral("settingsDisplayZoomIn"));
     m_actions.settingsDisplayZoomOut = createKeyBindingAction(QStringLiteral("settingsDisplayZoomOut"));
     m_actions.navigationNextTab = createKeyBindingAction(QStringLiteral("navigationNextTab"));
@@ -4981,7 +4983,7 @@ void MainWindow::setActionsText()
     m_actions.viewKeypadBasicWide->setText(MainWindow::tr("&Basic"));
     m_actions.viewKeypadScientificWide->setText(MainWindow::tr("&Scientific (wide)"));
     m_actions.viewKeypadScientificNarrow->setText(MainWindow::tr("Scientific (narrow)"));
-    m_actions.viewKeypadCustom->setText(MainWindow::tr("&Custom..."));
+    m_actions.viewKeypadCustom->setText(MainWindow::tr("&Custom"));
     m_actions.viewKeypadZoom50->setText(QStringLiteral("50%"));
     m_actions.viewKeypadZoom75->setText(QStringLiteral("75%"));
     m_actions.viewKeypadZoom100->setText(QStringLiteral("100%"));
@@ -5098,6 +5100,7 @@ void MainWindow::setActionsText()
     m_actions.settingsDisplayFont->setText(MainWindow::tr("&Font..."));
     m_actions.settingsResetAll->setText(MainWindow::tr("Reset All Settings..."));
     m_actions.settingsKeyBindings->setText(tr("&Keyboard Shortcuts..."));
+    m_actions.settingsCustomKeypad->setText(tr("Edit &Custom Keypad..."));
     m_actions.settingsDisplayZoomIn->setText(tr("Zoom &In"));
     m_actions.settingsDisplayZoomOut->setText(tr("Zoom &Out"));
     m_actions.navigationNextTab->setText(tr("Next Session Tab or Pane"));
@@ -5683,6 +5686,7 @@ void MainWindow::createMenus()
     m_menus.settings->addSeparator();
     m_menus.settings->addAction(m_actions.sessionImportUserDefinitions);
     m_menus.settings->addAction(m_actions.settingsKeyBindings);
+    m_menus.settings->addAction(m_actions.settingsCustomKeypad);
     m_menus.settings->addSeparator();
     m_menus.settings->addAction(m_actions.settingsResetAll);
 
@@ -9263,6 +9267,7 @@ void MainWindow::createFixedConnections()
     connect(m_actions.settingsLanguage, SIGNAL(triggered()), SLOT(showLanguageChooserDialog()));
     connectToActiveWindow(m_actions.settingsResetAll, &MainWindow::resetAllSettings);
     connectToActiveWindow(m_actions.settingsKeyBindings, &MainWindow::showKeyBindingsDialog);
+    connectToActiveWindow(m_actions.settingsCustomKeypad, &MainWindow::editCustomKeypad);
     connectToActiveWindow(m_actions.settingsDisplayZoomIn, &MainWindow::increaseDisplayFontPointSize);
     connectToActiveWindow(m_actions.settingsDisplayZoomOut, &MainWindow::decreaseDisplayFontPointSize);
 
@@ -14464,13 +14469,7 @@ void MainWindow::setKeypadMode(QAction* action)
         return;
 
     const Settings::KeypadMode mode = static_cast<Settings::KeypadMode>(action->data().toInt());
-    const bool isCustomMode = (mode == Settings::KeypadModeCustom);
-    if (isCustomMode && !configureCustomKeypad()) {
-        updateKeypadModeActionState();
-        return;
-    }
-
-    if (m_keypadMode == mode && !isCustomMode)
+    if (m_keypadMode == mode)
         return;
 
     const bool wasVisible = isVisibleKeypadMode(m_keypadMode);
@@ -14509,14 +14508,21 @@ void MainWindow::setKeypadZoom(QAction* action)
     }
 }
 
-bool MainWindow::configureCustomKeypad()
+void MainWindow::editCustomKeypad()
 {
     CustomKeypadDialog dialog(m_settings->customKeypad, this);
     if (dialog.exec() != QDialog::Accepted)
-        return false;
+        return;
 
     m_settings->customKeypad = dialog.customKeypad();
-    return true;
+    keepWindowSize(KeptWindowSize::UndoOlderSizes);
+    if (m_keypadMode == Settings::KeypadModeCustom) {
+        deleteKeypad();
+        createKeypad();
+    } else {
+        setKeypadMode(m_actions.viewKeypadCustom);
+    }
+    syncViewMenuActionState();
 }
 
 void MainWindow::setResultFormatBinary()
@@ -16941,6 +16947,8 @@ void MainWindow::showKeypadContextMenu(const QPoint& point)
         return;
     QMenu menu(this);
     menu.addActions(m_menus.keypad->actions());
+    menu.addSeparator();
+    menu.addAction(m_actions.settingsCustomKeypad);
     menu.addSeparator();
     menu.addMenu(m_menus.keypadZoom);
     MenuStyle::apply(&menu);

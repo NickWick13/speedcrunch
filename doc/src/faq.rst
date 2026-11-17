@@ -432,7 +432,7 @@ Yes, a few things help:
 - Inside brackets, autocomplete suggests unit names. Press **Tab** to accept.
 - Write a whole unit in one bracket: ``[km/h]`` instead of ``[km]/[h]``.
 - Add a button that inserts ``[`` to a custom keypad
-  (**View → Keypad → Custom...**).
+  (**Settings → Edit Custom Keypad...**).
 
 .. _faq-units-without-brackets:
 
@@ -791,9 +791,10 @@ Use **View → Keypad**. You can choose Basic, Scientific (wide), Scientific
 Can I design my own keypad?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Yes. Choose **View → Keypad → Custom...**. Set the number of rows and columns,
-then choose what each button does. You can start from one of the built-in
-layouts.
+Yes. Choose **Settings → Edit Custom Keypad...**. Set the number of rows and
+columns, then choose what each button does. You can start from one of the built-in
+layouts. Click **OK** to save and use the layout. Later, choose
+**View → Keypad → Custom** to select it again.
 
 .. _faq-keyboard-shortcuts:
 

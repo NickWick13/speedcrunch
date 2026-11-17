@@ -74,8 +74,13 @@ column order between launches, including for panels that are hidden.
     * ``Basic``
     * ``Scientific (wide)`` (**default**)
     * ``Scientific (narrow)``
-    * ``Custom...``
+    * ``Custom``
     * ``Disable`` (shown as ``Disabled`` when selected)
+
+    :guilabel:`Custom` selects your saved custom layout. To create or edit
+    that layout, choose :menuselection:`Settings --> Edit Custom Keypad`.
+    You can open the editor while any keypad layout is selected, even when
+    the keypad is disabled.
 
     ``DEL`` deletes the character before the cursor. Both scientific layouts
     also include ``C``, which clears the expression. Custom layouts saved with
@@ -111,8 +116,9 @@ column order between launches, including for panels that are hidden.
     is disabled.
     You can also right-click the keypad and choose :menuselection:`Zoom`.
 
-    ``Custom...`` opens a dialog where you can define the keypad matrix size (rows and columns)
-    and configure each button individually. For each position in the matrix, you can set:
+    :menuselection:`Settings --> Edit Custom Keypad` opens a dialog where you
+    can set the number of rows and columns and configure each button.
+    For each position in the grid, you can set:
 
     * The button label shown in the keypad
     * The button behavior: ``Insert text``, ``Backspace``, ``Clear expression``, or ``Evaluate expression``
@@ -129,13 +135,14 @@ column order between launches, including for panels that are hidden.
     Hover over a cell to see its full value, or open it for editing.
     Resizing the grid keeps buttons at positions that still fit. Positions
     outside the new grid are removed, and new positions start empty.
-    Click :guilabel:`OK` to use your layout, or :guilabel:`Cancel` to discard
-    the changes made in the dialog.
+    Click :guilabel:`OK` to save the layout and select :guilabel:`Custom` in
+    the active window. :guilabel:`Cancel` discards the changes made in the
+    dialog and leaves the current layout selected.
 
     Custom keypad settings are saved and restored automatically.
 
-    You can also right-click directly on the keypad to open the same menu as
-    :menuselection:`View --> Keypad`.
+    You can also right-click directly on the keypad to choose a layout,
+    open :guilabel:`Edit Custom Keypad`, or change the zoom level.
 
     .. versionadded:: 1.0
 
