@@ -168,8 +168,10 @@ Use ``ans``. It always holds the last result:
    ``7*ans``
    ``= 35``
 
-**Tip:** If you start a new line with an operator such as ``+``, ``-``, ``*`` or ``/``,
+**Tip:** Turn on :menuselection:`Settings --> Editing --> Auto-Insert ans`.
+Then, if you start a new line with an operator such as ``+``, ``-``, ``*`` or ``/``,
 SpeedCrunch adds ``ans`` for you. Type ``+3`` and you get ``ans+3``.
+This option is off by default.
 
 .. _faq-recall-calculation:
 

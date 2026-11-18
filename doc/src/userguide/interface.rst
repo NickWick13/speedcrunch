@@ -859,6 +859,7 @@ Editing
 
 * :menuselection:`Auto-Insert ans`
     If a new expression starts with ``+``, ``-``, ``*``, or ``/``, SpeedCrunch inserts ``ans`` first.
+    For example, type ``+3`` and you get ``ans+3``. This option is off by default.
 * :menuselection:`Group Digits in Input`
     Group digits as you type, using the separator and grouping pattern selected
     in :menuselection:`Settings --> Number Format...`. For example, ``1000``
