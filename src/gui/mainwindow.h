@@ -646,6 +646,7 @@ private:
         QAction* settingsRadixCharComma;
         QAction* settingsLanguage;
         QAction* helpManual;
+        QAction* helpFaq;
 #ifdef SPEEDCRUNCH_ENABLE_UPDATE_CHECKS
         QAction* helpUpdates;
 #endif

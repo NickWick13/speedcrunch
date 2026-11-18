@@ -4380,6 +4380,7 @@ void MainWindow::createActions()
     m_actions.settingsUnitNegativeExponentSuperscript = createKeyBindingAction(QStringLiteral("settingsUnitNegativeExponentSuperscript"));
     m_actions.settingsUnitNegativeExponentFraction = createKeyBindingAction(QStringLiteral("settingsUnitNegativeExponentFraction"));
     m_actions.helpManual = createKeyBindingAction(QStringLiteral("helpManual"));
+    m_actions.helpFaq = new QAction(this);
 #ifdef SPEEDCRUNCH_ENABLE_UPDATE_CHECKS
     m_actions.helpUpdates = createKeyBindingAction(QStringLiteral("helpUpdates"));
 #endif
@@ -5136,6 +5137,7 @@ void MainWindow::setActionsText()
     m_actions.settingsLanguage->setText(MainWindow::tr("&Language..."));
 
     m_actions.helpManual->setText(MainWindow::tr("User &Manual"));
+    m_actions.helpFaq->setText(MainWindow::tr("FA&Q"));
     m_actions.contextHelp->setText(MainWindow::tr("Context Help"));
 #ifdef SPEEDCRUNCH_ENABLE_UPDATE_CHECKS
     m_actions.helpUpdates->setText(MainWindow::tr("Check for &Updates"));
@@ -5692,6 +5694,7 @@ void MainWindow::createMenus()
 
     m_menus.help = new QMenu("", this);
     bar->addMenu(m_menus.help);
+    m_menus.help->addAction(m_actions.helpFaq);
     m_menus.help->addAction(m_actions.helpManual);
     m_menus.help->addAction(m_actions.contextHelp);
     m_menus.help->addSeparator();
@@ -9272,6 +9275,13 @@ void MainWindow::createFixedConnections()
     connectToActiveWindow(m_actions.settingsDisplayZoomOut, &MainWindow::decreaseDisplayFontPointSize);
 
     connect(m_actions.helpManual, SIGNAL(triggered()), SLOT(showManualWindow()));
+    connect(m_actions.helpFaq, &QAction::triggered, this, [this]() {
+        const QUrl url = m_manualServer->faqPage();
+        if (url.isValid()) {
+            showManualWindow();
+            m_widgets.manual->openPage(url);
+        }
+    });
     connect(m_actions.contextHelp, SIGNAL(triggered()), SLOT(showContextHelp()));
 #ifdef SPEEDCRUNCH_ENABLE_UPDATE_CHECKS
     connect(m_actions.helpUpdates, SIGNAL(triggered()), SLOT(checkForUpdates()));

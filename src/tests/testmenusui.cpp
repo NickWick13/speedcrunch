@@ -11,6 +11,7 @@ class TestMenusUi : public QObject {
 private slots:
     void initTestCase();
     void init() { UiTestFixture::resetSettings(); }
+    void help_menu_opens_manual_faq();
     void menu_title_changes_keep_overflow_receivers_valid();
     void menu_bar_keeps_themed_contrast_with_platform_palette_data();
     void menu_bar_keeps_themed_contrast_with_platform_palette();
@@ -53,6 +54,39 @@ private slots:
     void disabled_context_menu_labels_are_dimmed();
     void themed_menu_labels_leave_room_for_shortcuts();
 };
+
+void TestMenusUi::help_menu_opens_manual_faq()
+{
+    MainWindow window;
+    QMenu* help = menuWithTitle(window.menuBar(), MainWindow::tr("&Help"));
+    QVERIFY(help);
+    QAction* faq = directMenuActionWithText(help, MainWindow::tr("FA&Q"));
+    QVERIFY(faq);
+
+    faq->trigger();
+    QPointer<ManualWindow> manual;
+    for (QWidget* widget : QApplication::topLevelWidgets()) {
+        if (auto* browser = qobject_cast<ManualWindow*>(widget)) {
+            manual = browser;
+            break;
+        }
+    }
+    QVERIFY(manual);
+    const auto closeManual = qScopeGuard([&manual]() {
+        if (manual)
+            manual->close();
+    });
+    QVERIFY(manual->isVisible());
+    QCOMPARE(manual->source().scheme(), QStringLiteral("qthelp"));
+    QCOMPARE(manual->source().fileName(), QStringLiteral("faq.html"));
+    QCOMPARE(manual->documentTitle(), QStringLiteral("Frequently Asked Questions"));
+
+    manual->home();
+    QCOMPARE(manual->source().fileName(), QStringLiteral("introduction.html"));
+    faq->trigger();
+    QVERIFY(manual);
+    QCOMPARE(manual->source().fileName(), QStringLiteral("faq.html"));
+}
 
 void TestMenusUi::menu_title_changes_keep_overflow_receivers_valid()
 {

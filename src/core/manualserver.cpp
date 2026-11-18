@@ -100,6 +100,14 @@ QUrl ManualServer::homePage()
     return QUrl();
 }
 
+QUrl ManualServer::faqPage()
+{
+    const QUrl home = homePage();
+    if (!home.isValid())
+        return QUrl();
+    return m_helpEngine->findFile(home.resolved(QUrl(QStringLiteral("faq.html"))));
+}
+
 QUrl ManualServer::urlForKeyword(const QString& keyword)
 {
     ensureCorrectLanguage();

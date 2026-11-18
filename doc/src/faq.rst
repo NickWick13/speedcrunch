@@ -9,8 +9,9 @@ Frequently Asked Questions
 ==========================
 
 This page answers the questions that SpeedCrunch users ask most often.
-For more detail, see the :doc:`userguide/index`. You can also open the manual
-in the app by pressing **F1**, or choosing **Help → User Manual**.
+In the app, choose :menuselection:`Help --> FAQ` to open this page.
+For more detail, see the :doc:`userguide/index`. You can open the manual in the
+app by pressing **F1** or choosing :menuselection:`Help --> User Manual`.
 
 .. note::
 
