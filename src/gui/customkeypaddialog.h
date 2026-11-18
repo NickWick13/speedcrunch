@@ -31,7 +31,7 @@ private:
     struct Cell {
         QString label;
         QString text;
-        Settings::CustomKeypadButtonAction action;
+        Settings::CustomKeypadButtonAction action = Settings::CustomKeypadActionInsertText;
     };
 
     int cellIndex(int row, int column) const;
