@@ -242,7 +242,49 @@ This work belongs in the separate
   [Flathub app page](https://flathub.org/apps/org.speedcrunch.SpeedCrunch)
   once its catalogue refreshes. The website download link can remain unchanged.
 
-## 7. Close out the release
+## 7. Submit the Microsoft Store package
+
+Submit only final releases. The package is versioned `X.Y.Z.0`, and the Store
+rejects a version it has already received. See
+[BUILDING.md](BUILDING.md#microsoft-store-package) for packaging details.
+
+- [ ] From the Visual Studio developer prompt, build the package from the
+  release commit in a fresh directory:
+
+  ```bat
+  cmake -S . -B build-store -G "Visual Studio 17 2022" -A x64 -DCMAKE_PREFIX_PATH="%QT_ROOT%" -DBUILD_VARIANT_MICROSOFT_STORE_RELEASE=ON
+  cmake --build build-store --config Release --parallel
+  cmake --build build-store --config Release --target msix
+  ```
+
+  This produces `build-store\SpeedCrunch-X.Y.Z-x64.msix`. Check that the
+  configure step printed no pre-release warning and that the reported MSIX
+  identity matches the Partner Center product identity page.
+- [ ] Sign a copy with the local test certificate and install it, after
+  removing any earlier test install. Launch it from the Start menu and check:
+  the About version, calculations, the manual, that settings and sessions
+  survive a restart, that a second launch reuses the open window, and that
+  no update check or update menu entry appears.
+- [ ] Run the Windows App Certification Kit on the installed package from an
+  elevated shell. Only the two expected results described in BUILDING.md may
+  remain: the *Blocked executables* failure and the *High-DPI support* warning.
+- [ ] Remove the test install.
+- [ ] In Partner Center, start a new submission for SpeedCrunch. Upload the
+  **unsigned** `SpeedCrunch-X.Y.Z-x64.msix`, never the test-signed copy, and
+  remove the previous package. Fix any identity or version errors reported on
+  upload before continuing.
+- [ ] Update the Store listing's release notes and any outdated screenshots.
+  Review pricing, markets, age rating, and properties, which carry over from
+  the previous submission.
+- [ ] Keep the certification notes explaining `runFullTrust`: SpeedCrunch is a
+  full-trust Qt desktop application. Keep the privacy statement in line with
+  the Store build: it makes no network connections and collects no data.
+- [ ] Submit. Certification can take up to three business days. If it fails,
+  read the report, fix the cause, and resubmit.
+- [ ] After publication, install SpeedCrunch from the Store on a clean account
+  or machine and check that it launches and keeps settings across restarts.
+
+## 8. Close out the release
 
 - [ ] Notify distribution packagers through the usual channels, pointing to
   the tag, changelog, source, and updated build requirements. Mention any

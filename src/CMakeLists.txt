@@ -222,6 +222,11 @@ if(APPLE)
     target_link_libraries(${APPLICATION_NAME} PRIVATE "-framework AppKit")
 elseif(WIN32)
     target_link_libraries(${APPLICATION_NAME} PRIVATE user32)
+    if(MSVC)
+        # The linker merges this into its generated manifest. It declares
+        # Per-Monitor V2 DPI awareness, which the Store certification checks.
+        target_sources(${APPLICATION_NAME} PRIVATE resources/speedcrunch.manifest)
+    endif()
 elseif(TARGET PkgConfig::XCB)
     target_compile_definitions(${APPLICATION_NAME} PRIVATE SPEEDCRUNCH_X11_ACTIVATION)
     target_link_libraries(${APPLICATION_NAME} PRIVATE PkgConfig::XCB)
@@ -514,6 +519,11 @@ endif()
 include(InstallLicenses)
 
 if(WIN32)
+    # Only the update check uses TLS. Without it, Qt Network just carries the
+    # single-instance local socket, so skip the TLS backend.
+    if(NOT ENABLE_UPDATE_CHECKS)
+        set(qtwin32_Qt6Network_PLUGINS)
+    endif()
     qtwin32_deploy_modules(${BIN_INSTALL_DIR} qtwin32_Qt6Widgets qtwin32_Qt6Help qtwin32_Qt6Network)
     qtwin32_deploy_default_qt_conf(${BIN_INSTALL_DIR})
 elseif(APPLE)

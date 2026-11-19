@@ -75,6 +75,12 @@ set(speedcrunch_priconfig "${CMAKE_CURRENT_SOURCE_DIR}/resources/msix/priconfig.
 # Index a copy of the logos alone; the license file names otherwise read as
 # invalid resource qualifiers.
 set(speedcrunch_msix_pri_root "${CMAKE_BINARY_DIR}/msix-pri")
+# Without update checks, Qt Network only serves the single-instance local
+# socket, so the TLS backends would never be loaded.
+set(speedcrunch_msix_skip_plugin_types generic,networkinformation,imageformats)
+if(NOT ENABLE_UPDATE_CHECKS)
+    string(APPEND speedcrunch_msix_skip_plugin_types ",tls")
+endif()
 if(SPEEDCRUNCH_MAKEAPPX AND SPEEDCRUNCH_MAKEPRI AND speedcrunch_windeployqt)
     # windeployqt uses the installer workflow options, and skips the DirectX
     # shader compiler it would otherwise copy from the Windows SDK, as the
@@ -85,7 +91,7 @@ if(SPEEDCRUNCH_MAKEAPPX AND SPEEDCRUNCH_MAKEPRI AND speedcrunch_windeployqt)
         COMMAND "${CMAKE_COMMAND}" --install "${CMAKE_BINARY_DIR}" --config $<CONFIG>
                 --prefix "${speedcrunch_msix_staging}"
         COMMAND "${speedcrunch_windeployqt}" --release --no-compiler-runtime --no-translations
-                --skip-plugin-types generic,networkinformation,imageformats
+                --skip-plugin-types ${speedcrunch_msix_skip_plugin_types}
                 --exclude-plugins qsqlodbc --no-system-dxc-compiler
                 "${speedcrunch_msix_staging}/${BIN_INSTALL_DIR}/${APPLICATION_NAME}.exe"
         COMMAND "${CMAKE_COMMAND}" -E remove_directory "${speedcrunch_msix_pri_root}"

@@ -181,6 +181,27 @@ from `src/resources/msix/Assets`, indexes them into
 `resources.pri`, and writes `SpeedCrunch-<version>-<arch>.msix` to the build
 directory. Build x64 and arm64 in separate build directories.
 
+An x64 package is enough to reach Windows 11 on Arm, which runs it under
+emulation. A native arm64 package needs a Qt kit cross-compiled for arm64,
+configured with `-qt-host-path` pointing to the x64 kit, and the MSVC ARM64
+build tools. In a cross build, `windeployqt` is
+the host tool, and the `msix` target does not yet point it at the arm64 kit, so
+check that the staged Qt DLLs are arm64 before packing.
+
+Every logo in `src/resources/msix/Assets` must stay below 204,800 bytes, or
+the App Certification Kit fails the package. Recompress large PNGs losslessly
+rather than shrinking them.
+
+MSVC builds embed `src/resources/speedcrunch.manifest` in `speedcrunch.exe`. It
+declares Per-Monitor V2 DPI awareness, which Qt would otherwise only set at
+run time, so Windows and the certification tools see it in the binary.
+
+In the Store build, Qt Network is used only by the single-instance relaunch
+(`QLocalServer`, a local named pipe). The update check, the only code that
+opens network connections, is not compiled. Without update checks, Windows
+builds therefore leave out the `tls` plugins, both from the install rules and
+from `windeployqt` in the `msix` target.
+
 The package identity comes from Partner Center and defaults to the reserved
 product. `SPEEDCRUNCH_MSIX_IDENTITY_NAME`, `SPEEDCRUNCH_MSIX_PUBLISHER` and
 `SPEEDCRUNCH_MSIX_PUBLISHER_DISPLAY_NAME` override it, and must match the
@@ -193,13 +214,46 @@ so only final releases are submitted. Configuring a pre-release prints a
 warning; its package is only for local testing.
 
 Upload the package unsigned; the Store signs it. To install it locally first,
-sign it with a self-signed certificate whose subject equals the publisher:
+sign a copy with a self-signed certificate whose subject equals the publisher,
+and keep the unsigned file for the upload:
 
-    signtool sign /fd SHA256 /a /f test.pfx /p <password> SpeedCrunch-<version>-x64.msix
+    signtool sign /fd SHA256 /a /f test.pfx /p <password> SpeedCrunch-<version>-x64-test-signed.msix
 
-The certificate must be trusted under Local Machine, Trusted People. Then
-install the package and run the Windows App Certification Kit (`appcert.exe`)
-on it before submitting.
+The certificate must be trusted under Local Machine, Trusted People, which
+needs an elevated shell once. Install the signed copy with
+`Add-AppxPackage -Path <file>`. A package of the same version does not install
+over an earlier one, so remove the test install first with
+`Get-AppxPackage HelderCorreia.SpeedCrunch | Remove-AppxPackage`. Remove it
+again before installing SpeedCrunch from the Store, whose package has the same
+identity but a different signature.
+
+When testing the installed package, note that:
+
+- A packaged app edits files that already exist in `%APPDATA%` in place, so a
+  machine that has run SpeedCrunch before keeps using
+  `%APPDATA%\SpeedCrunch`. On a clean machine, settings and sessions go to the
+  package's private folder under `%LOCALAPPDATA%\Packages`, and uninstalling
+  deletes them.
+- Windows Calculator also registers the `calculator:` protocol, so the first
+  `calculator:` link opens the Windows app chooser instead of SpeedCrunch.
+
+Then run the Windows App Certification Kit from an elevated shell
+(`appcertui.exe` for the guided UI, or `appcert.exe`), choose
+*Validate Store App*, and select the installed package. Its traces are written
+to `%LOCALAPPDATA%\Microsoft\AppCertKit`. Two results are expected and do not
+need fixing:
+
+- *Package sanity test / Blocked executables* fails, listing `CreateProcessW`
+  and `ShellExecute` references and short strings such as `reg` or `CMD` in the
+  Qt libraries. This optional test flags ordinary Qt desktop libraries.
+- *High-DPI support* warns "Failed to process the binary" and "not DPI Aware".
+  The kit's binary reader returns `E_FAIL` for executables installed under
+  `C:\Program Files\WindowsApps`, including Microsoft's own packaged apps.
+  The kit then looks for DPI API calls in `speedcrunch.exe`, but Qt makes them
+  from `platforms\qwindows.dll`. The same reader reports Per-Monitor V2 for the
+  identical file outside `WindowsApps`.
+
+Any other failure, such as an oversized logo, must be fixed before submitting.
 
 ### License files in installed packages
 
