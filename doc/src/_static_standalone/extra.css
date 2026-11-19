@@ -73,6 +73,160 @@ body {
   text-align: center;
 }
 
+/* Download page: platform logo on the left, its buttons stacked on the right. */
+.dl-platform {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 15px;
+}
+
+.dl-platform:last-child {
+  margin-bottom: 0;
+}
+
+/* All platforms share one height: the tallest button stack, two 34px buttons
+   with their 5px margins (88px). Logo (68px) + name (20px) match it. */
+.dl-platform-logo .fa {
+  font-size: 68px;
+  line-height: 68px;
+}
+
+.dl-platform-logo p {
+  margin: 0;
+  line-height: 20px;
+}
+
+.dl-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  min-height: 88px;
+}
+
+.dl-buttons .dl-button {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* Flathub badge as a blue button. The light badge is black on white; inverted
+   it is white on black, and "screen" blending turns the black into the
+   button's own blue. The clip cuts off the badge's own border. */
+.dl-flathub {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.dl-flathub img {
+  height: 32px; /* 34px button minus its 1px borders */
+  filter: invert(1);
+  mix-blend-mode: screen;
+  clip-path: inset(2px round 6px);
+}
+
+/* Space between platforms when they stack (Windows, macOS, Linux), but not
+   after the last one. On wide screens Windows sits on the left and macOS above
+   Linux on the right, so only macOS and Linux need a (smaller) gap. */
+.dl-column {
+  margin-bottom: 50px;
+}
+
+.dl-column:last-child {
+  margin-bottom: 0;
+}
+
+@media (min-width: 1200px) {
+  .row > .dl-column {
+    margin-bottom: 0;
+  }
+
+  .dl-column-group > .dl-column:not(:last-child) {
+    margin-bottom: 35px;
+  }
+
+  /* Both halves get the height of the taller one; on the right, macOS stays
+     at the top and Linux moves to the bottom. */
+  .dl-platforms {
+    display: flex;
+  }
+
+  .dl-column-group {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+}
+
+/* Card for extra install notes (package managers, Linux packages). */
+.dl-note {
+  max-width: 360px;
+  margin: 0 auto;
+  padding: 12px 14px;
+  text-align: left;
+  background-color: #f7f7f9;
+  border: 1px solid #e1e1e8;
+  border-radius: 8px;
+}
+
+.dl-note-title {
+  font-weight: 600;
+}
+
+.dl-note-title .fa {
+  color: #777;
+}
+
+.dl-package {
+  margin-top: 12px;
+}
+
+.dl-package-name {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* Terminal-style block: one line per command, each with a "$" prompt. */
+.dl-terminal {
+  margin-top: 5px;
+  padding: 8px 12px;
+  background-color: #1f2329;
+  border-radius: 6px;
+  overflow-x: auto;
+}
+
+.dl-note-title + .dl-terminal {
+  margin-top: 8px;
+}
+
+.dl-terminal .dl-cmd {
+  display: block;
+  padding: 0;
+  font-size: 12px;
+  line-height: 1.6;
+  color: #e6e6e6;
+  background-color: transparent;
+  white-space: nowrap; /* a wrapped command would look like two commands */
+}
+
+/* Phones: tighter spacing so the longest command (WinGet) fits on one line. */
+@media (max-width: 420px) {
+  .dl-note {
+    padding: 10px;
+  }
+
+  .dl-terminal {
+    padding: 7px 9px;
+  }
+
+  .dl-terminal .dl-cmd {
+    font-size: 10px;
+  }
+}
+
 
 .featurette-image {
   -webkit-filter: drop-shadow(5px 5px 5px #222);

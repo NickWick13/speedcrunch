@@ -1,42 +1,64 @@
 {% extends "entrance.html" %}
 
-{% macro downloads(win=[], osx=[], linux=[], win_port_text=True, linux_dropdown=True, macos_first_launch_warning=True) -%}
+{% macro downloads(win=[], osx=[], linux=[], linux_dropdown=True, macos_first_launch_warning=True, homebrew_cask=None, win_packages=[]) -%}
   <div class="container-fluid">
-    <div class="row">
+    <div class="row dl-platforms">
       {% if win -%}
-        <div class="col-lg-{{ 4 if linux else 6 }} center-div">
-          <p><i class="fa fa-windows" style="vertical-align:middle; font-size:8em;"></i></p>
-          <p><b>Windows</b></p>
-          <p>
-            {% for (name, path) in win -%}
-              {% if name == "Installer" -%}
-                <a class="btn btn-primary btn-md dl-button" href="{{ path }}"><i class="fa fa-laptop fa-lg" style="vertical-align:middle;"></i>&nbsp;{{ name }}</a>
-              {%- else %}
-                <a class="btn btn-primary btn-md dl-button" href="{{ path }}"><i class="fa fa-usb fa-lg" style="vertical-align:middle;"></i>&nbsp;{{ name }}</a>
-              {%- endif %}
-            {%- endfor %}
-          </p>
-          {% if win_port_text -%}
-            <p>
-              {% trans %}Use the portable version if you can't or don't want to install the application. Take it anywhere and just run the file to start.{% endtrans %}
-            </p>
+        <div class="col-lg-6 center-div dl-column">
+          <div class="dl-platform">
+            <div class="dl-platform-logo">
+              <i class="fa fa-windows"></i>
+              <p><b>Windows</b></p>
+            </div>
+            <div class="dl-buttons">
+              {% for (name, path) in win -%}
+                <a class="btn btn-primary btn-md dl-button" href="{{ path }}"><i class="fa fa-{{ 'usb' if name == _('Portable') else 'laptop' }} fa-lg" style="vertical-align:middle;"></i>&nbsp;{{ name }}</a>
+              {%- endfor %}
+            </div>
+          </div>
+          {% if win_packages -%}
+            <div class="dl-note">
+              <div class="dl-note-title"><i class="fa fa-terminal"></i>&nbsp;{% trans %}Or install with a package manager{% endtrans %}</div>
+              {% for (name, url, commands) in win_packages -%}
+                <div class="dl-package">
+                  <a class="dl-package-name" href="{{ url }}">{{ name }}</a>
+                  <div class="dl-terminal">
+                    {% for command in commands -%}
+                      <code class="dl-cmd">{{ command }}</code>
+                    {%- endfor %}
+                  </div>
+                </div>
+              {%- endfor %}
+            </div>
           {%- endif %}
         </div>
       {%- endif %}
 
-      <div class="col-lg-{{ 4 if linux else 6 }} center-div">
-        <p><i class="fa fa-apple" style="vertical-align:middle; font-size:8em;"></i></p>
-        <p><b>macOS</b></p>
-        {% if osx -%}
-          <p>
-            {% for (name, path) in osx -%}
-              <a class="btn btn-primary btn-md dl-button" href="{{ path }}"><i class="fa fa-{{ 'usb' if name == _('Portable') else 'laptop' }} fa-lg" style="vertical-align:middle;"></i>&nbsp;{{ name }}</a>
-            {%- endfor %}
-          </p>
-        {%- else %}
-          <p>
-            <a class="btn btn-primary btn-md dl-button"><i class="fa fa-laptop fa-lg" style="vertical-align:middle;"></i>&nbsp;Download</a>
-          </p>
+      {#- macOS and Linux share the right-hand column on wide screens. #}
+      <div class="col-lg-{{ 6 if win else 12 }} dl-column-group">
+      <div class="center-div dl-column">
+        <div class="dl-platform">
+          <div class="dl-platform-logo">
+            <i class="fa fa-apple"></i>
+            <p><b>macOS</b></p>
+          </div>
+          <div class="dl-buttons">
+            {% if osx -%}
+              {% for (name, path) in osx -%}
+                <a class="btn btn-primary btn-md dl-button" href="{{ path }}"><i class="fa fa-{{ 'usb' if name == _('Portable') else 'laptop' }} fa-lg" style="vertical-align:middle;"></i>&nbsp;{{ name }}</a>
+              {%- endfor %}
+            {%- else %}
+              <a class="btn btn-primary btn-md dl-button"><i class="fa fa-laptop fa-lg" style="vertical-align:middle;"></i>&nbsp;Download</a>
+            {%- endif %}
+          </div>
+        </div>
+        {% if homebrew_cask -%}
+          <div class="dl-note">
+            <div class="dl-note-title"><i class="fa fa-terminal"></i>&nbsp;{% trans %}Or install with{% endtrans %} <a href="https://formulae.brew.sh/cask/{{ homebrew_cask }}">Homebrew</a></div>
+            <div class="dl-terminal">
+              <code class="dl-cmd">brew install --cask {{ homebrew_cask }}</code>
+            </div>
+          </div>
         {%- endif %}
         {% if macos_first_launch_warning -%}
           <div class="alert alert-warning text-left" role="alert">
@@ -47,39 +69,39 @@
       </div>
 
       {% if linux -%}
-        <div class="col-lg-4 center-div">
-          <p><i class="fa fa-linux" style="vertical-align:middle; font-size:8em;"></i></p>
-          <p><b>Linux</b></p>
-
-          <p>
-            {% if not linux_dropdown -%}
-              {% for (name, path) in linux -%}
-                {% if name == 'Flathub' -%}
-                  <a href="{{ path }}"><img width="180" alt="{{ _('Download on Flathub') }}" src='https://flathub.org/assets/badges/flathub-badge-en.png'/></a>
-                  <br/><small>{% trans %}Official SpeedCrunch build.{% endtrans %}</small>
-                {%- else -%}
-                  <a class="btn btn-primary btn-md dl-button" href="{{ path }}"><i class="fa fa-laptop fa-lg" style="vertical-align:middle;"></i>&nbsp;{{ name }}</a>
-                {%- endif %}
-              {%- endfor %}
-            {%- else -%}
-              <div class="btn-group">
-                <button type="button" class="btn btn-primary btn-md dl-button dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  <i class="fa fa-laptop fa-lg" style="vertical-align:middle;"></i>&nbsp;{% trans %}Download{% endtrans %}&nbsp;<span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu">
-                  {% for (name, path) in linux -%}
-                    <li><a href="{{ path }}">{{ name }}</a></li>
-                  {%- endfor %}
-                </ul>
-              </div>
-            {%- endif %}
-          </p>
-
-          <p>
-            {% trans %}If available, you can also install this SpeedCrunch version directly with your distribution's package manager.{% endtrans %}
-          </p>
+        <div class="center-div dl-column">
+          <div class="dl-platform">
+            <div class="dl-platform-logo">
+              <i class="fa fa-linux"></i>
+              <p><b>Linux</b></p>
+            </div>
+            <div class="dl-buttons">
+              {% if not linux_dropdown -%}
+                {% for (name, path) in linux -%}
+                  {% if name == 'Flathub' -%}
+                    <a class="btn btn-primary btn-md dl-button dl-flathub" href="{{ path }}"><img alt="{{ _('Get it on Flathub') }}" src="https://flathub.org/api/badge?locale=en&amp;light"/></a>
+                    <small>{% trans %}Official SpeedCrunch build.{% endtrans %}</small>
+                  {%- else -%}
+                    <a class="btn btn-primary btn-md dl-button" href="{{ path }}"><i class="fa fa-laptop fa-lg" style="vertical-align:middle;"></i>&nbsp;{{ name }}</a>
+                  {%- endif %}
+                {%- endfor %}
+              {%- else -%}
+                <div class="btn-group">
+                  <button type="button" class="btn btn-primary btn-md dl-button dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fa fa-laptop fa-lg" style="vertical-align:middle;"></i>&nbsp;{% trans %}Download{% endtrans %}&nbsp;<span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu">
+                    {% for (name, path) in linux -%}
+                      <li><a href="{{ path }}">{{ name }}</a></li>
+                    {%- endfor %}
+                  </ul>
+                </div>
+              {%- endif %}
+            </div>
+          </div>
         </div>
       {%- endif %}
+      </div><!-- /.dl-column-group -->
     </div><!-- /.row -->
   </div>
 {%- endmacro %}
@@ -107,10 +129,10 @@
     </ul>
 
     <div class="container">
-      <h1>{% trans %}Download SpeedCrunch{% endtrans %}</h1>
+      <h1 id="version-1-2" style="scroll-margin-top: 80px;">{% trans %}SpeedCrunch 1.2.0{% endtrans %}</h1>
       <p>{% trans %}Free, open-source scientific calculator for Windows, macOS and Linux.{% endtrans %}</p>
+      <hr/>
       <section aria-labelledby="version-1-2">
-        <h2 id="version-1-2" style="scroll-margin-top: 80px;">{% trans %}Version 1.2.0{% endtrans %}</h2>
         {{ downloads(
           win=[
             (_('Installer'), 'https://github.com/heldercorreia/speedcrunch/releases/download/v1.2.0/SpeedCrunch-1.2.0-windows-x64.exe'),
@@ -123,14 +145,12 @@
           linux=[('Flathub', 'https://flathub.org/apps/org.speedcrunch.SpeedCrunch'),],
           linux_dropdown=False,
           macos_first_launch_warning=False,
+          homebrew_cask='speedcrunch',
+          win_packages=[
+            ('WinGet', 'https://winstall.app/apps/SpeedCrunch.SpeedCrunch', ['winget install SpeedCrunch.SpeedCrunch']),
+            ('Scoop', 'https://scoop.sh/#/apps?q=speedcrunch', ['scoop bucket add extras', 'scoop install extras/speedcrunch']),
+            ('Chocolatey', 'https://community.chocolatey.org/packages?q=speedcrunch', ['choco install speedcrunch']),],
         ) }}
-        <hr/>
-
-        <p>
-          {% trans %}Unsure about the installation?{% endtrans %}
-          <a href="{{ pathto('userguide/installation') }}">{% trans %}Have a look at the instructions.{% endtrans %}</a>
-        </p>
-        <p>{% trans %}Older versions:{% endtrans %} <a href="#version-1-1">1.1</a>, <a href="#version-1-0">1.0</a>, <a href="#older-versions">0.12</a></p>
         <hr/>
 
         <section aria-labelledby="highlights-1-2">
