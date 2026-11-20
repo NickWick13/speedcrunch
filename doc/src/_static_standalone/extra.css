@@ -86,11 +86,11 @@ body {
   margin-bottom: 0;
 }
 
-/* All platforms share one height: the tallest button stack, two 34px buttons
-   with their 5px margins (88px). Logo (68px) + name (20px) match it. */
+/* All platforms share one height: the tallest button stack, three 34px
+   buttons with their 5px margins (132px). Logo (112px) + name (20px) match it. */
 .dl-platform-logo .fa {
-  font-size: 68px;
-  line-height: 68px;
+  font-size: 112px;
+  line-height: 112px;
 }
 
 .dl-platform-logo p {
@@ -103,7 +103,7 @@ body {
   flex-direction: column;
   align-items: stretch;
   justify-content: center;
-  min-height: 88px;
+  min-height: 132px;
 }
 
 .dl-buttons .dl-button {
@@ -111,19 +111,28 @@ body {
   margin-right: 0;
 }
 
-/* Flathub badge as a blue button. The light badge is black on white; inverted
-   it is white on black, and "screen" blending turns the black into the
-   button's own blue. The clip cuts off the badge's own border. */
-.dl-flathub {
+/* Store badges (Flathub, Microsoft Store) as blue buttons. The light badges
+   are dark on white; inverted they are light on black, and "screen" blending
+   turns the black into the button's own blue. The hue rotation undoes the
+   colour change of the inversion, so the Microsoft Store logo keeps its
+   colours. The clip cuts off each badge's own border. */
+.dl-badge {
   padding-top: 0;
   padding-bottom: 0;
 }
 
-.dl-flathub img {
+.dl-badge img {
   height: 32px; /* 34px button minus its 1px borders */
-  filter: invert(1);
+  filter: invert(1) hue-rotate(180deg);
   mix-blend-mode: screen;
+}
+
+.dl-flathub img {
   clip-path: inset(2px round 6px);
+}
+
+.dl-msstore img {
+  clip-path: inset(1px round 3px);
 }
 
 /* Space between platforms when they stack (Windows, macOS, Linux), but not

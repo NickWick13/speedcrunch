@@ -12,7 +12,11 @@
             </div>
             <div class="dl-buttons">
               {% for (name, path) in win -%}
-                <a class="btn btn-primary btn-md dl-button" href="{{ path }}"><i class="fa fa-{{ 'usb' if name == _('Portable') else 'laptop' }} fa-lg" style="vertical-align:middle;"></i>&nbsp;{{ name }}</a>
+                {% if name == 'Microsoft Store' -%}
+                  <a class="btn btn-primary btn-md dl-button dl-badge dl-msstore" href="{{ path }}"><img alt="{{ _('Download from the Microsoft Store') }}" src="https://get.microsoft.com/images/en-us%20light.svg"/></a>
+                {%- else -%}
+                  <a class="btn btn-primary btn-md dl-button" href="{{ path }}"><i class="fa fa-{{ 'usb' if name == _('Portable') else 'laptop' }} fa-lg" style="vertical-align:middle;"></i>&nbsp;{{ name }}</a>
+                {%- endif %}
               {%- endfor %}
             </div>
           </div>
@@ -79,7 +83,7 @@
               {% if not linux_dropdown -%}
                 {% for (name, path) in linux -%}
                   {% if name == 'Flathub' -%}
-                    <a class="btn btn-primary btn-md dl-button dl-flathub" href="{{ path }}"><img alt="{{ _('Get it on Flathub') }}" src="https://flathub.org/api/badge?locale=en&amp;light"/></a>
+                    <a class="btn btn-primary btn-md dl-button dl-badge dl-flathub" href="{{ path }}"><img alt="{{ _('Get it on Flathub') }}" src="https://flathub.org/api/badge?locale=en&amp;light"/></a>
                     <small>{% trans %}Official SpeedCrunch build.{% endtrans %}</small>
                   {%- else -%}
                     <a class="btn btn-primary btn-md dl-button" href="{{ path }}"><i class="fa fa-laptop fa-lg" style="vertical-align:middle;"></i>&nbsp;{{ name }}</a>
@@ -135,6 +139,7 @@
       <section aria-labelledby="version-1-2">
         {{ downloads(
           win=[
+            ('Microsoft Store', 'https://apps.microsoft.com/detail/9ppmkgvkmf98'),
             (_('Installer'), 'https://github.com/heldercorreia/speedcrunch/releases/download/v1.2.0/SpeedCrunch-1.2.0-windows-x64.exe'),
             (_('Portable'), 'https://github.com/heldercorreia/speedcrunch/releases/download/v1.2.0/SpeedCrunch-1.2.0-windows-x64.zip'),],
 
