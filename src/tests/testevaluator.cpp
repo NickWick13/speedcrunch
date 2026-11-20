@@ -4873,6 +4873,9 @@ void test_user_functions()
 void test_user_units()
 {
     CHECK_INTERPRETED(QString::fromUtf8("[foounit] = [m⁵]"), "[foounit]=[m^5]");
+    CHECK_INTERPRETED("[M] = [mol/L]", "[M]=[mol/L]");
+    CHECK_DISPLAY_INTERPRETED("[M] = [mol/L]", QString::fromUtf8("[M] = 1 [mol/L]"));
+    CHECK_DISPLAY_INTERPRETED("2[M]", QString::fromUtf8("2 [M]"));
     CHECK_EVAL("[two_cubic_metres] = 2[m^3]", "2 cubic_metre");
     CHECK_EVAL("1[two_cubic_metres] -> [m^3]", "2 m³");
 

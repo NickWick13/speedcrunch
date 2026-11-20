@@ -4171,10 +4171,24 @@ static QString formatInterpretedExpressionForDisplayImpl(const QString& expressi
             && Units::isAffineUnitName(operatorText);
         const bool isDisplayUnitToken =
             token.isUnitIdentifier() || shouldTreatIdentifierAsUnit;
-        QString displayTokenText = isDisplayUnitToken
+        // Built-in unit lookups ignore case, so a user unit such as "M" would
+        // otherwise be shown as the metre symbol "m". User unit names never
+        // match a built-in unit, so show them exactly as they were defined.
+        // The left side of a unit definition may not be registered yet.
+        const bool isAssignmentLeftSideUnitName =
+            i == 1
+            && tokens.size() > 3
+            && tokens.at(0).text() == QString(MathDsl::UnitStart)
+            && tokens.at(2).text() == QString(MathDsl::UnitEnd)
+            && tokens.at(3).asOperator() == Token::Assignment;
+        const bool isUserUnitToken =
+            isDisplayUnitToken
+            && (isAssignmentLeftSideUnitName
+                || (evaluator ? evaluator : Evaluator::instance())->hasUserUnit(operatorText));
+        QString displayTokenText = isDisplayUnitToken && !isUserUnitToken
             ? UnitDisplayFormat::shortDisplayName(operatorText)
             : operatorText;
-        if (isDisplayUnitToken) {
+        if (isDisplayUnitToken && !isUserUnitToken) {
             const UnitId id = unitId(normalizeUnitName(operatorText));
             if (id != UnitId::Unknown) {
                 const QString symbol = unitSymbol(id);
