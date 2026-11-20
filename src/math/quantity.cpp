@@ -984,6 +984,13 @@ Quantity operator-(const Quantity& q)
         return q.isList() ? Quantity::list(rows.value(0)) : Quantity::matrix(rows);
     }
     Quantity res(q);
+    // Negate °C/°F values in their shown scale, not in base Kelvin, so that
+    // -40[°C] means -40 °C (233.15 K) instead of -313.15 K.
+    CNumber negatedAffineBaseValue;
+    if (tryAffineScaleByRealScalar(q, HNumber(-1), &negatedAffineBaseValue)) {
+        res.m_numericValue = negatedAffineBaseValue;
+        return res;
+    }
     res.m_numericValue = -res.m_numericValue;
     return res;
 }

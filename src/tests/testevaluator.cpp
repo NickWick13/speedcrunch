@@ -1656,6 +1656,41 @@ void test_units_temperature_affine_conversions()
     CHECK_EVAL(QString::fromUtf8("ans/2"), "2 °C");
     CHECK_EVAL(QString::fromUtf8("71.2 [°F] + 3 [°F]"), "74.2 °F");
     CHECK_EVAL(QString::fromUtf8("71.2 [°F] - 3 [°F]"), "68.2 °F");
+
+}
+
+void test_units_temperature_affine_negative_values()
+{
+    // Unary minus must negate the shown °C/°F value, not the base Kelvin value.
+    CHECK_EVAL(QString::fromUtf8("-40[°C] -> [°F]"), "-40 °F");
+    CHECK_EVAL(QString::fromUtf8("-40[°F] -> [°C]"), "-40 °C");
+    CHECK_EVAL(QString::fromUtf8("-40 [°C] -> [°F]"), "-40 °F");
+    CHECK_EVAL(QString::fromUtf8("(-40)[°C] -> [°F]"), "-40 °F");
+    CHECK_EVAL(QString::fromUtf8("-(40[°C]) -> [°F]"), "-40 °F");
+    CHECK_EVAL(QString::fromUtf8("−40[°C] -> [°F]"), "-40 °F");
+    CHECK_EVAL("-10[degree_celsius] -> [degree_fahrenheit]", "14 degree_fahrenheit");
+    CHECK_EVAL("-4[degree_fahrenheit] -> [degree_celsius]", "-20 degree_celsius");
+    CHECK_EVAL("-10[degree_celsius] -> [kelvin]", "263.15 kelvin");
+    CHECK_EVAL("-40[degree_fahrenheit] -> [kelvin]", "233.15 kelvin");
+    CHECK_EVAL(QString::fromUtf8("-273.15[°C] -> [kelvin]"), "0 kelvin");
+    CHECK_EVAL(QString::fromUtf8("-459.67[°F] -> [kelvin]"), "0 kelvin");
+    CHECK_EVAL(QString::fromUtf8("-10[°C]"), "-10 °C");
+    CHECK_EVAL(QString::fromUtf8("-10[°F]"), "-10 °F");
+    CHECK_EVAL(QString::fromUtf8("--10[°C]"), "10 °C");
+    CHECK_EVAL(QString::fromUtf8("-10[degC] -> [degF]"), "14 °F");
+    CHECK_EVAL(QString::fromUtf8("-10[Cel] -> [Fah]"), "14 °F");
+    CHECK_EVAL_FORMAT(QString::fromUtf8("-40[°C] -> [°F]"), u8"-40[°F]");
+    CHECK_EVAL_FORMAT(QString::fromUtf8("-17.5[°C] -> [°F]"), u8"0.5[°F]");
+    CHECK_EVAL_FORMAT(QString::fromUtf8("-1[°F] -> [°C]"), u8"-18.33333333333333333333[°C]");
+
+    // Negating a stored temperature and mixing it with others.
+    CHECK_EVAL(QString::fromUtf8("5 [°C] -> [°C]"), "5 °C");
+    CHECK_EVAL(QString::fromUtf8("-ans"), "-5 °C");
+    CHECK_EVAL(QString::fromUtf8("5[°C] - -3[°C]"), "8 °C");
+    CHECK_EVAL(QString::fromUtf8("-5[°F] + 3[°F]"), "-2 °F");
+
+    // Kelvin is not affine and keeps plain negation.
+    CHECK_EVAL(QString::fromUtf8("-1[K] -> [°C]"), "-274.15 °C");
 }
 
 void test_units_grouping_and_inverse_presentation()
@@ -1942,6 +1977,7 @@ void test_units()
     test_units_derived_si_recognition_and_disambiguation();
     test_units_conversion_compatibility_and_canonicalization();
     test_units_temperature_affine_conversions();
+    test_units_temperature_affine_negative_values();
     test_units_grouping_and_inverse_presentation();
     test_units_preferred_derived_forms_regressions();
 
