@@ -1485,6 +1485,7 @@ void TestKeypadUi::keypad_view_menu_tracks_and_changes_only_active_window()
         return count;
     };
 
+    UiTestFixture::waitForActivationToSettle();
     firstWindow.raise();
     if (!UiTestFixture::activateWindow(&firstWindow))
         return;
