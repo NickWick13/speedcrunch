@@ -25,8 +25,8 @@ releases there.
   CPack package versions and filenames, and the manual version. Do not edit
   generated Windows resources or bundle files to change the version.
 - [ ] Add the new release as the first entry under `<releases>` in **both**:
-  - `pkg/desktop-appdata/org.speedcrunch.SpeedCrunch.metainfo.xml.in`
-  - `pkg/org.speedcrunch.SpeedCrunch.metainfo.xml`
+  - `dist/desktop-appdata/org.speedcrunch.SpeedCrunch.metainfo.xml.in`
+  - `dist/org.speedcrunch.SpeedCrunch.metainfo.xml`
 
   ```xml
   <release version="X.Y.Z" date="YYYY-MM-DD"/>

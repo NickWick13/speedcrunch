@@ -83,7 +83,7 @@ update-metadata-files)
     # - metainfo.xml (AppStream)
     # - .desktop launcher file
     # This consumes PO files in this directory and writes merged files to
-    # the parent pkg/ directory.
+    # the parent dist/ directory.
     intltool-merge --xml-style $SRC_DIR $SRC_DIR/org.speedcrunch.SpeedCrunch.metainfo.xml.in $SRC_DIR/../org.speedcrunch.SpeedCrunch.metainfo.xml
     intltool-merge --desktop-style $SRC_DIR $SRC_DIR/org.speedcrunch.SpeedCrunch.desktop.in $SRC_DIR/../org.speedcrunch.SpeedCrunch.desktop
     ;;

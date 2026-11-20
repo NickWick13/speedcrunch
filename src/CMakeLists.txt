@@ -501,7 +501,7 @@ endif(PORTABLE_SPEEDCRUNCH)
 install(TARGETS ${APPLICATION_NAME} DESTINATION "${BIN_INSTALL_DIR}")
 
 if(UNIX AND NOT APPLE AND NOT HAIKU)
-    install(FILES ../pkg/org.speedcrunch.SpeedCrunch.desktop DESTINATION "${MENU_DIR}")
+    install(FILES ../dist/org.speedcrunch.SpeedCrunch.desktop DESTINATION "${MENU_DIR}")
     install(FILES ../gfx/speedcrunch.svg
         DESTINATION "${ICON_DIR}/scalable/apps"
         RENAME org.speedcrunch.SpeedCrunch.svg)
@@ -509,7 +509,7 @@ if(UNIX AND NOT APPLE AND NOT HAIKU)
         install(FILES "../gfx/icons/${ICON_SIZE}x${ICON_SIZE}/org.speedcrunch.SpeedCrunch.png"
             DESTINATION "${ICON_DIR}/${ICON_SIZE}x${ICON_SIZE}/apps")
     endforeach()
-    install(FILES ../pkg/org.speedcrunch.SpeedCrunch.metainfo.xml DESTINATION "${APP_DATA_DIR}")
+    install(FILES ../dist/org.speedcrunch.SpeedCrunch.metainfo.xml DESTINATION "${APP_DATA_DIR}")
 endif()
 
 if(WIN32)

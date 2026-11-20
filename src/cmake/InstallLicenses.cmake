@@ -6,7 +6,7 @@ endif()
 set(speedcrunch_license_dir "${DOC_INSTALL_DIR}/Licenses")
 
 if(WIN32)
-    install(FILES "${CMAKE_CURRENT_LIST_DIR}/../../pkg/COPYING.rtf"
+    install(FILES "${CMAKE_CURRENT_LIST_DIR}/../../dist/COPYING.rtf"
         DESTINATION "${DOC_INSTALL_DIR}")
 endif()
 
