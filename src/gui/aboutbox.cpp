@@ -30,10 +30,13 @@ AboutBox::AboutBox(QWidget* parent, Qt::WindowFlags f)
     msg += " (Microsoft Store)";
 #endif
     msg += "</b><br>";
-    msg += "(" SPEEDCRUNCH_SOURCE_REVISION_SHORT ")";
-    if (QLatin1String(SPEEDCRUNCH_SOURCE_STATE) == QLatin1String("dirty"))
-        msg += " (dirty)";
-    msg += "<br>";
+    // Source archives built without Git metadata have no commit to show.
+    if (QLatin1String(SPEEDCRUNCH_SOURCE_REVISION) != QLatin1String("unknown")) {
+        msg += "(" SPEEDCRUNCH_SOURCE_REVISION_SHORT ")";
+        if (QLatin1String(SPEEDCRUNCH_SOURCE_STATE) == QLatin1String("dirty"))
+            msg += " (dirty)";
+        msg += "<br>";
+    }
     msg += "Qt " + QLatin1String(QT_VERSION_STR) + "<br>";
     const QString osName = QSysInfo::prettyProductName()
         .remove(QLatin1Char('(')).remove(QLatin1Char(')'));

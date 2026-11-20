@@ -833,6 +833,17 @@ void TestSettingsUi::settings_reset_restores_dock_column_orders()
     }
 }
 
+// About leaves the commit line out when the build has no commit.
+static QString expectedAboutCommitLine()
+{
+    if (QLatin1String(SPEEDCRUNCH_SOURCE_REVISION) == QLatin1String("unknown"))
+        return QString();
+    QString line = QStringLiteral("(" SPEEDCRUNCH_SOURCE_REVISION_SHORT ")");
+    if (QLatin1String(SPEEDCRUNCH_SOURCE_STATE) == QLatin1String("dirty"))
+        line += QStringLiteral(" (dirty)");
+    return line;
+}
+
 void TestSettingsUi::about_box_shows_version_commit_qt_and_os_in_order()
 {
     AboutBox dialog;
@@ -848,15 +859,14 @@ void TestSettingsUi::about_box_shows_version_commit_qt_and_os_in_order()
     const QStringList lines = textEdit->toPlainText().split(QLatin1Char('\n'));
     const int versionLine = lines.indexOf(applicationVersion);
     QVERIFY(versionLine >= 0);
-    QVERIFY(lines.size() > versionLine + 3);
-    QString commitLine = QStringLiteral("(" SPEEDCRUNCH_SOURCE_REVISION_SHORT ")");
-    if (QLatin1String(SPEEDCRUNCH_SOURCE_STATE) == QLatin1String("dirty"))
-        commitLine += QStringLiteral(" (dirty)");
+    QStringList expected;
+    const QString commitLine = expectedAboutCommitLine();
+    if (!commitLine.isEmpty())
+        expected << commitLine;
     const QString osName = QSysInfo::prettyProductName()
         .remove(QLatin1Char('(')).remove(QLatin1Char(')'));
-    QCOMPARE(lines.at(versionLine + 1), commitLine);
-    QCOMPARE(lines.at(versionLine + 2), QStringLiteral("Qt " QT_VERSION_STR));
-    QCOMPARE(lines.at(versionLine + 3), osName);
+    expected << QStringLiteral("Qt " QT_VERSION_STR) << osName;
+    QCOMPARE(lines.mid(versionLine + 1, expected.size()), expected);
 }
 
 void TestSettingsUi::about_box_identifies_source_commit()
@@ -864,12 +874,14 @@ void TestSettingsUi::about_box_identifies_source_commit()
     AboutBox dialog;
     const QTextEdit* textEdit = dialog.findChild<QTextEdit*>();
     QVERIFY(textEdit);
-    QString commitLine = QStringLiteral("(" SPEEDCRUNCH_SOURCE_REVISION_SHORT ")");
-    if (QLatin1String(SPEEDCRUNCH_SOURCE_STATE) == QLatin1String("dirty"))
-        commitLine += QStringLiteral(" (dirty)");
-    QVERIFY(textEdit->toPlainText().split(QLatin1Char('\n')).contains(commitLine));
-    QVERIFY(!textEdit->toPlainText().contains(QStringLiteral("Commit: ")));
-    QVERIFY(!textEdit->toPlainText().contains(QStringLiteral(SPEEDCRUNCH_VERSION "-dev")));
+    const QString text = textEdit->toPlainText();
+    const QString commitLine = expectedAboutCommitLine();
+    if (commitLine.isEmpty())
+        QVERIFY(!text.contains(QStringLiteral("(unknown)")));
+    else
+        QVERIFY(text.split(QLatin1Char('\n')).contains(commitLine));
+    QVERIFY(!text.contains(QStringLiteral("Commit: ")));
+    QVERIFY(!text.contains(QStringLiteral(SPEEDCRUNCH_VERSION "-dev")));
 }
 
 void TestSettingsUi::diagnostics_identifies_source_commit()

@@ -18,8 +18,9 @@ whether tracked files have local changes. Commits, checkouts, and tracked edits 
 information on the next build. Untracked files do not mark a build as dirty.
 When building a source archive without Git metadata, pass
 `-DSPEEDCRUNCH_SOURCE_REVISION=<full-40-character-SHA>` to record its origin.
-Otherwise the commit and source tree state appear as `unknown`. An explicit
-revision also leaves the source tree state as `unknown`.
+Otherwise About leaves out the commit, and App Diagnostics shows the commit and
+source tree state as `unknown`. An explicit revision also leaves the source
+tree state as `unknown`.
 
 The manual reads the same version directly from CMake when Sphinx runs, so it
 can still be built separately. Application builds use the prebuilt manual and
