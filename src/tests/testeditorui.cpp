@@ -208,6 +208,7 @@ private slots:
     void accepts_degree_alias_in_unit_brackets_and_normalizes_to_degree_sign();
     void completion_offers_cbrt_without_its_symbol();
     void keeps_typed_and_pasted_cube_root_symbol();
+    void pastes_double_asterisk_as_power();
     void offers_unit_completion_for_degree_symbol_in_unit_context();
     void matches_micro_units_when_typing_u_in_unit_context();
     void unit_context_completion_excludes_user_variables();
@@ -4054,6 +4055,20 @@ void TestEditorUi::keeps_typed_and_pasted_cube_root_symbol()
     mime.setText(expression);
     pasted.insertFromMimeData(&mime);
     QCOMPARE(pasted.text(), expression);
+}
+
+void TestEditorUi::pastes_double_asterisk_as_power()
+{
+    class PasteEditor : public Editor {
+    public:
+        using Editor::insertFromMimeData;
+    };
+    Settings::instance()->automaticInputAdjustments = true;
+    PasteEditor editor;
+    QMimeData mime;
+    mime.setText(QStringLiteral("2**3*4"));
+    editor.insertFromMimeData(&mime);
+    QCOMPARE(editor.text(), QString::fromUtf8("2^3×4"));
 }
 
 void TestEditorUi::offers_unit_completion_for_degree_symbol_in_unit_context()

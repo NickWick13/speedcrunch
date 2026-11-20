@@ -6672,14 +6672,14 @@ void test_expression_operator_normalization()
     const QString normalized = EditorUtils::normalizeExpressionOperators(
         QString::fromUtf8("1＋2 8/4÷2 "
                           "9-4 9－4 9﹣4 9‐4 9‑4 9–4 9—4 9―4 9⁃4 "
-                          "2∗3·4·5∙6*7⨉8⨯9✕10✖11"));
+                          "2∗3·4·5∙6*7⨉8⨯9✕10✖11 2**3*4"));
     const std::string normalizedStd = normalized.toStdString();
     ++eval_total_tests;
     DisplayErrorOnMismatch(__FILE__, __LINE__, "normalizeExpressionOperators",
                            normalizedStd,
                            "1+2 8⧸4⧸2 "
                            "9−4 9−4 9−4 9−4 9−4 9−4 9−4 9−4 9−4 "
-                           "2×3×4×5×6×7×8×9×10×11",
+                           "2×3×4×5×6×7×8×9×10×11 2^3×4",
                            eval_failed_tests, eval_new_failed_tests);
 
     const QStringList parsed = EditorUtils::parsePastedExpressions(
@@ -6727,12 +6727,12 @@ void test_expression_operator_normalization()
     }
 
     const QString editorNormalized = EditorUtils::normalizeExpressionOperatorsForEditorInput(
-        QString::fromUtf8("2·3 4·5 6*7 8/4 10÷2 9⧸3 𝜋 𝝅 𝞹 𝛑 Ω μ sqrt cbrt ∛ ∛8 asqrt cbrtfoo"));
+        QString::fromUtf8("2**3 2·3 4·5 6*7 8/4 10÷2 9⧸3 𝜋 𝝅 𝞹 𝛑 Ω μ sqrt cbrt ∛ ∛8 asqrt cbrtfoo"));
     const std::string editorNormalizedStd = editorNormalized.toStdString();
     ++eval_total_tests;
     DisplayErrorOnMismatch(__FILE__, __LINE__, "normalizeExpressionOperatorsForEditorInput",
                            editorNormalizedStd,
-                           "2·3 4·5 6×7 8/4 10/2 9/3 π π π π Ω µ √ cbrt ∛ ∛8 asqrt cbrtfoo",
+                           "2^3 2·3 4·5 6×7 8/4 10/2 9/3 π π π π Ω µ √ cbrt ∛ ∛8 asqrt cbrtfoo",
                            eval_failed_tests, eval_new_failed_tests);
 
     const QString implicitMulWithLatinLetter =

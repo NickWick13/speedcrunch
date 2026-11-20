@@ -63,6 +63,12 @@ enum AutoAnsRewriteMode {
     AutoAnsAppendAns = 2
 };
 
+// Turns "**" into "^", so that "2**3" is not read as two multiplications.
+inline QString normalizeExponentiationOperators(QString text)
+{
+    return text.replace(QString(2, MathDsl::MulOpAl1), QString(MathDsl::PowOp));
+}
+
 inline QString normalizeMultiplicationOperators(QString text, bool keepDotOperator = false)
 {
     for (QChar& ch : text) {
@@ -116,6 +122,7 @@ inline QString normalizeExpressionOperators(QString text)
 
     text = UnicodeChars::normalizeUnitSymbolAliases(text);
     text = UnicodeChars::normalizeSexagesimalSymbolAliases(text);
+    text = normalizeExponentiationOperators(text);
     text = normalizeMultiplicationOperators(text);
     text = normalizeDivisionOperators(text);
     text = normalizeAdditionOperators(text);
@@ -133,6 +140,7 @@ inline QString normalizeExpressionOperatorsForEditorInput(QString text)
     text = UnicodeChars::normalizeSexagesimalSymbolAliases(text);
     text = UnicodeChars::normalizePiAliasesToPi(text);
     text = UnicodeChars::normalizeRootFunctionAliasesForInput(text);
+    text = normalizeExponentiationOperators(text);
     text = normalizeMultiplicationOperators(text, true);
     text = normalizeDivisionOperatorsForEditorInput(text);
     text = normalizeAdditionOperators(text);
