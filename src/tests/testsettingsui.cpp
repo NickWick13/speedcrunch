@@ -2045,10 +2045,12 @@ void TestSettingsUi::tooltip_appearance_switches_result_preview_colors()
     toolTips->actions().at(0)->trigger();
     QCOMPARE(guard.settings->toolTipAppearance, Settings::ToolTipAppearanceSystem);
     QVERIFY2(popup->styleSheet().isEmpty(), qPrintable(popup->styleSheet()));
+    // In dark mode the native palette replaces see-through macOS tooltip colors.
+    const QPalette native = ToolTipStyleUtils::nativeToolTipPalette();
     QCOMPARE(popup->palette().color(QPalette::ToolTipBase),
-             QToolTip::palette().color(QPalette::ToolTipBase));
+             native.color(QPalette::ToolTipBase));
     QCOMPARE(popup->palette().color(QPalette::WindowText),
-             QToolTip::palette().color(QPalette::ToolTipText));
+             native.color(QPalette::ToolTipText));
 
     toolTips->actions().at(1)->trigger();
     QCOMPARE(popup->styleSheet(), themed);
@@ -2255,10 +2257,12 @@ void TestSettingsUi::tooltip_popups_use_system_style_when_theme_is_empty()
 
     ToolTipStyleUtils::applyPopupTheme(popup, label, &anchor, {});
     QVERIFY2(popup->styleSheet().isEmpty(), qPrintable(popup->styleSheet()));
+    // In dark mode the native palette replaces see-through macOS tooltip colors.
+    const QPalette native = ToolTipStyleUtils::nativeToolTipPalette();
     QCOMPARE(popup->palette().color(QPalette::ToolTipBase),
-             QToolTip::palette().color(QPalette::ToolTipBase));
+             native.color(QPalette::ToolTipBase));
     QCOMPARE(label->palette().color(QPalette::WindowText),
-             QToolTip::palette().color(QPalette::ToolTipText));
+             native.color(QPalette::ToolTipText));
     QCOMPARE(popup->font(), QToolTip::font());
 
     ToolTipStyleUtils::applyPopupTheme(popup, label, &anchor, themed);
