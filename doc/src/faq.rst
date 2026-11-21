@@ -831,6 +831,16 @@ On Windows and Linux, yes: **View → Main Menu**. You can still reach the menu
 by right-clicking the result area. On macOS, the menu bar belongs to the
 system, so you cannot hide it.
 
+.. _faq-hover-buttons:
+
+Is there any way to remove the hovering buttons?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Yes. Turn off **Settings → Appearance → Hover Highlighting**. Calculations are
+then no longer highlighted when you move the mouse over them, and the buttons
+do not appear. You can still copy a calculation into the input field with a
+double-click, or use the right-click menu.
+
 .. _faq-subsequent-launch:
 
 What happens when I start SpeedCrunch while it is already running?
