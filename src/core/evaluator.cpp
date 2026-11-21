@@ -6919,6 +6919,18 @@ bool hasMixedStandaloneExplicitAngleTermAddSub(const Tokens& tokens)
         return op == Token::Addition || op == Token::Subtraction;
     };
 
+    // A sign at the start or after another operator is unary, as in
+    // 5∠-45[deg] or 2*-45[deg]. It does not split terms.
+    auto endsOperand = [](const Token& token) {
+        if (token.isOperand())
+            return true;
+        const Token::Operator op = token.asOperator();
+        return op == Token::AssociationEnd
+               || op == Token::Factorial
+               || op == Token::Percent
+               || (op >= Token::Super0 && op <= Token::Super9);
+    };
+
     int parenDepth = 0;
     int unitDepth = 0;
     QVector<int> splitOps;
@@ -6943,8 +6955,11 @@ bool hasMixedStandaloneExplicitAngleTermAddSub(const Tokens& tokens)
                 --unitDepth;
             continue;
         }
-        if (parenDepth == 0 && unitDepth == 0 && isTopLevelAddSub(token))
+        if (parenDepth == 0 && unitDepth == 0 && isTopLevelAddSub(token)
+            && i > 0 && endsOperand(tokens.at(i - 1)))
+        {
             splitOps.append(i);
+        }
     }
     if (splitOps.isEmpty())
         return false;
@@ -6969,6 +6984,16 @@ bool hasMixedStandaloneExplicitAngleTermAddSub(const Tokens& tokens)
         return false;
     };
 
+    // In a phasor such as 10∠30[deg], the angle unit belongs to the phase.
+    // The term itself is a complex number, not an angle.
+    auto termHasPhasor = [&tokens](int start, int end) {
+        for (int i = start; i < end; ++i) {
+            if (tokens.at(i).asOperator() == Token::Phasor)
+                return true;
+        }
+        return false;
+    };
+
     bool hasStandaloneExplicitAngleTerm = false;
     bool hasNonStandaloneExplicitAngleTerm = false;
     int termStart = 0;
@@ -6981,7 +7006,8 @@ bool hasMixedStandaloneExplicitAngleTermAddSub(const Tokens& tokens)
 
         const bool hasAngleUnit = termHasExplicitAngleUnit(termStart, termEnd);
         const bool hasFunction = termHasFunctionCall(termStart, termEnd);
-        if (hasAngleUnit && !hasFunction)
+        const bool hasPhasor = termHasPhasor(termStart, termEnd);
+        if (hasAngleUnit && !hasFunction && !hasPhasor)
             hasStandaloneExplicitAngleTerm = true;
         else
             hasNonStandaloneExplicitAngleTerm = true;

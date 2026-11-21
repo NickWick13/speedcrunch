@@ -6658,6 +6658,22 @@ void test_format()
     CHECK_EVAL(QStringLiteral("3 ") + phasorOp + QStringLiteral(" (pi/2)"), "3i");
     CHECK_EVAL(QStringLiteral("3 ") + phasorOp + QString::fromUtf8(" 90°"), "3i");
     CHECK_EVAL(QStringLiteral("3 ") + phasorOp + QStringLiteral(" 200[gon]"), "-3");
+    // A sign right after an operator is unary and keeps the unit with the angle.
+    CHECK_EVAL(QStringLiteral("2 ") + phasorOp + QStringLiteral(" -90[deg]"), "-2i");
+    CHECK_EVAL(QStringLiteral("2") + phasorOp + QStringLiteral("-90[deg]"), "-2i");
+    CHECK_EVAL(QStringLiteral("2 ") + phasorOp + QStringLiteral(" +90[deg]"), "2i");
+    CHECK_EVAL(QStringLiteral("2 ") + phasorOp + QStringLiteral(" -200[gon]"), "-2");
+    CHECK_EVAL("2 * -45[deg] -> [deg]", u8"-90°");
+    CHECK_EVAL(QStringLiteral("1 ") + phasorOp + QStringLiteral(" 90[deg] + 1 ") + phasorOp
+               + QStringLiteral(" -90[deg]"), "0");
+    // A phasor is a complex number, so it can be added to a plain number.
+    CHECK_EVAL(QStringLiteral("10 ") + phasorOp + QStringLiteral(" 90[deg] + 5"), "5+10i");
+    CHECK_EVAL(QStringLiteral("5 + 2 ") + phasorOp + QStringLiteral(" 90[deg]"), "5+2i");
+    CHECK_EVAL(QStringLiteral("5 - 2 ") + phasorOp + QStringLiteral(" -90[deg]"), "5+2i");
+    // A bare angle still cannot be added to a plain number.
+    CHECK_EVAL_FAIL("2 - -45[deg]");
+    CHECK_EVAL_FAIL("-45[deg] + 2");
+    CHECK_EVAL_FAIL(QStringLiteral("10 ") + phasorOp + QStringLiteral(" 90[deg] + 45[deg]"));
 
     settings->angleUnit = 'd';
     Evaluator::instance()->initializeAngleUnits();
