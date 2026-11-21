@@ -5774,6 +5774,9 @@ void Evaluator::compile(const Tokens& tokens)
 
     TokenStack syntaxStack;
     QStack<int> argStack;
+    // Syntax stack index of the "(" or "{" that opened each argStack entry.
+    // Each call or list must push the argument count of its parent once.
+    QStack<unsigned> argGroupStack;
     unsigned argCount = 1;
 
     for (int i = 0; i <= tokens.count() && !syntaxStack.hasError(); ++i) {
@@ -5837,6 +5840,8 @@ void Evaluator::compile(const Tokens& tokens)
                             << argCount << " \n";
 #endif
                     argCount = argStack.empty() ? 0 : argStack.pop();
+                    if (!argGroupStack.isEmpty())
+                        argGroupStack.pop();
                 }
             }
 
@@ -5854,12 +5859,18 @@ void Evaluator::compile(const Tokens& tokens)
                     && id.isIdentifier())
                 {
                     ruleFound = true;
-                    argStack.push(argCount);
+                    // After a reduction in the first argument, as in
+                    // abs(2*3), this rule matches the same call again.
+                    const unsigned group = syntaxStack.itemCount() - 2;
+                    if (argGroupStack.isEmpty() || argGroupStack.top() != group) {
+                        argStack.push(argCount);
+                        argGroupStack.push(group);
 #ifdef EVALUATOR_DEBUG
-                    dbg << "\tEntering new function, pushing argcount="
-                        << argCount << " of parent function\n";
+                        dbg << "\tEntering new function, pushing argcount="
+                            << argCount << " of parent function\n";
 #endif
-                    argCount = 1;
+                        argCount = 1;
+                    }
                     break;
                 }
            }
@@ -5881,6 +5892,8 @@ void Evaluator::compile(const Tokens& tokens)
                        << argCount << " elements\n";
 #endif
                    argCount = argStack.empty() ? 0 : argStack.pop();
+                   if (!argGroupStack.isEmpty())
+                       argGroupStack.pop();
                }
            }
 
@@ -5894,8 +5907,13 @@ void Evaluator::compile(const Tokens& tokens)
                    && s_isOpeningListBraceToken(left))
                {
                    ruleFound = true;
-                   argStack.push(argCount);
-                   argCount = 1;
+                   // Like for functions, enter each list only once.
+                   const unsigned group = syntaxStack.itemCount() - 2;
+                   if (argGroupStack.isEmpty() || argGroupStack.top() != group) {
+                       argStack.push(argCount);
+                       argGroupStack.push(group);
+                       argCount = 1;
+                   }
                    break;
                }
            }
@@ -7888,6 +7906,14 @@ Quantity Evaluator::exec(const QVector<Opcode>& opcodes,
 
                     restoreN();
                     pushStackValue(sigmaResult);
+                } else if (hasPendingDeferredOperandContext(stack.count())
+                           && std::any_of(args.constBegin(), args.constEnd(),
+                                          [](const Quantity& arg) { return arg.isNan(); }))
+                {
+                    // An argument is still a NaN placeholder, like n in a
+                    // summation, so the call can't be judged yet. It is
+                    // checked again once the real values are known.
+                    pushStackValue(CMath::nan());
                 } else {
                     pushStackValue(function->exec(args));
                     if (function->error()) {

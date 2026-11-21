@@ -882,10 +882,18 @@ CNumber CMath::gon2rad(const CNumber& x)
 // Wrappers towards functions defined only on real numbers
 // =======================================================
 
-// NaN is treated like real numbers for the purposes of wrappers.
+// A NaN argument keeps its own error (NoOperand if it has none), as in HMath,
+// so callers can tell a NaN placeholder apart from a non-real argument.
+static Error notRealError(const CNumber& number, Error error)
+{
+    if (!number.isNan())
+        return error;
+    return number.error() == Success ? NoOperand : number.error();
+}
+
 #define ENSURE_REAL(number, error) \
-    if((number).isNan() || !(number).isNearReal()) \
-        return CMath::nan(error);
+    if ((number).isNan() || !(number).isNearReal()) \
+        return CMath::nan(notRealError((number), (error)));
 
 #define REAL_WRAPPER_CNUMBER_1(fct, error) \
     CNumber CNumber::fct() const \

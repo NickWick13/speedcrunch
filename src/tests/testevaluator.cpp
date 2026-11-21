@@ -944,6 +944,9 @@ void test_lists_and_matrices()
     CHECK_EVAL("det(A)", "-2");
     CHECK_EVAL("inv(A)", "{{-2; 1}; {1.5; -0.5}}");
     CHECK_EVAL("trace(A)", "5");
+    CHECK_EVAL("rows({{1;2};{5;6};{3*1;4}})", "3");
+    CHECK_EVAL("{{1;2};{5;6};{3*1;4}}", "{{1; 2}; {5; 6}; {3; 4}}");
+    CHECK_EVAL("trace({{1;0;0};{0;1;0};{0;0;abs(2*3)}})", "8");
     CHECK_EVAL("rank({{1; 2}; {2; 4}})", "1");
     CHECK_EVAL("X = {{1;2}; {2;3}; {3;4}}", "{{1; 2}; {2; 3}; {3; 4}}");
     CHECK_EVAL("covp(X)", "{{0.66666666666666666667; 0.66666666666666666667}; {0.66666666666666666667; 0.66666666666666666667}}");
@@ -3946,6 +3949,15 @@ void test_function_basic()
     CHECK_EVAL_FAIL("molarity(1;2;3)");
     CHECK_EVAL_FAIL("molarity(1[g];1[L])");
     CHECK_EVAL_FAIL("molarity(1[mol];1[s])");
+
+    /* A call whose first argument holds an operator or another call, given
+       as the third or later argument, used to break its parent's argument
+       count. */
+    CHECK_EVAL("max(1;4;abs(2*3))", "6");
+    CHECK_EVAL("max(1;4;abs(abs(7)))", "7");
+    CHECK_EVAL("max(1;4;5;abs(2*3)+1)", "7");
+    CHECK_EVAL("max(1;4;ncr(2+2;2))", "6");
+    CHECK_EVAL("max(abs(2*3);1;4)", "6");
 }
 
 void test_function_trig()
@@ -4085,6 +4097,36 @@ void test_function_stat()
     CHECK_EVAL("SUMMATION(1;4;1/n)", "2.08333333333333333333");
     CHECK_EVAL("SUMMATION(1;3;n[metre])", "NaN");
     CHECK_EVAL("SUMMATION(1;3;n^2+n)", "20");
+    /* Functions and the factorial applied to n. Complex mode is the app
+       default and the case where n! used to fail. */
+    {
+        Settings* settings = Settings::instance();
+        const bool oldComplexNumbers = settings->complexNumbers;
+        const bool oldComplexMode = DMath::complexMode;
+        for (const bool complexNumbers : {false, true}) {
+            settings->complexNumbers = complexNumbers;
+            DMath::complexMode = complexNumbers;
+            CHECK_EVAL("summation(1; 5; n!)", "153");
+            CHECK_EVAL("summation(0; 20; 1/n!)", "2.71828182845904523534");
+            CHECK_EVAL("summation(0; 3; 1/(n+1))", "2.08333333333333333333");
+            CHECK_EVAL("summation(0; 10; ncr(10; n))", "1024");
+            CHECK_EVAL("summation(0; 4; npr(4; n))", "65");
+            CHECK_EVAL("summation(1; 4; gamma(n))", "10");
+            CHECK_EVAL("summation(1; 4; gamma(n+1))", "33");
+            CHECK_EVAL("summation(1; 4; exp(lngamma(n)))", "10");
+            CHECK_EVAL("summation(1; 4; sqrt(n^2))", "10");
+            CHECK_EVAL("summation(1; 4; floor(n/2))", "4");
+            CHECK_EVAL("summation(1; 4; gcd(n; 6))", "8");
+            CHECK_EVAL("summation(1; 4; max(n; 2))", "11");
+            CHECK_EVAL("summation(1; 4; binompmf(n; 4; 0.5))", "0.9375");
+            CHECK_EVAL("summation(1; 4; n + abs(2*n))", "30");
+            CHECK_EVAL_FAIL("summation(1; 3; (-n)!)");
+            CHECK_EVAL_FAIL("summation(1; 3; gcd(n; 1.5))");
+            CHECK_EVAL_FAIL("summation(1; 3; ncr(n))");
+        }
+        settings->complexNumbers = oldComplexNumbers;
+        DMath::complexMode = oldComplexMode;
+    }
     CHECK_INTERPRETED("summation(1;10;n+1)", "∑(1; 10; n+1)");
     CHECK_EVAL_FAIL("sigma(1;10;n+1)");
     CHECK_INTERPRETED("∑(1;10;n+1)", "∑(1; 10; n+1)");
