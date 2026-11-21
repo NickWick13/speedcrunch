@@ -130,12 +130,20 @@ that is used for displaying results, select one of the corresponding settings in
 
     Format ``n`` in engineering notation.
 
-    If ``exponent`` is provided, force the ``e`` exponent suffix to that value. ``exponent`` can be:
+    If ``exponent`` is provided, force the ``e`` exponent suffix to that value.
+    ``exponent`` can be:
 
-    * an integer exponent that is a multiple of 3 (for example, ``-3`` or ``6``), or
-    * a power of ten with exponent a multiple of 3 (for example, ``milli``, ``micro``, ``kilo``, ``mega``, ``pico``).
+    * an exponent that is a multiple of 3, for example ``-3`` or ``6``, or
+    * the matching power of ten, for example ``1e-3``, ``0.001`` or ``1e6``.
 
-    ``eng(0.000123456; milli)`` is equivalent to ``eng(0.000123456; -3)``.
+    Other values are rejected. ``eng(0.000123456; 1e-3)`` is the same as
+    ``eng(0.000123456; -3)``::
+
+        eng(0.000123456; -3)
+        = 0.123456e-3
+
+        eng(123456789.123456789; 1e-6)
+        = 123456789123456.789e-6
 
 .. function:: rat(n)
               ratio(n)

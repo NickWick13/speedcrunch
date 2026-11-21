@@ -6554,6 +6554,12 @@ void test_format()
     CHECK_EVAL("eng(0.000123456; 6)", "0.000000000123456e6");
     CHECK_EVAL("eng(0.000123456; -3)", "0.123456e-3");
     CHECK_EVAL("eng(0.000123456; -12)", "123456000e-12");
+    // A power of ten works like its exponent.
+    CHECK_EVAL("eng(0.000123456; 1e-3)", "0.123456e-3");
+    CHECK_EVAL("eng(0.000123456; 0.001)", "0.123456e-3");
+    CHECK_EVAL("eng(123456789.123456789; 1e-6)", "123456789123456.789e-6");
+    CHECK_EVAL("eng(123456789.123456789; 1e6)", "123.456789123456789e6");
+    CHECK_EVAL_FAIL("eng(0.000123456; 1e-4)");
     CHECK_EVAL_FORMAT_EXACT("rat(0.5)", QStringLiteral("1") + slash + QStringLiteral("2"));
     CHECK_EVAL_FORMAT_EXACT("ratio(0.5)", QStringLiteral("1") + slash + QStringLiteral("2"));
     CHECK_EVAL_FORMAT_EXACT("rational(0.5)", QStringLiteral("1") + slash + QStringLiteral("2"));

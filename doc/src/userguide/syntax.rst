@@ -133,13 +133,16 @@ For explicit decimal exponent notations, use :func:`sci` (scientific notation) o
     eng(12341)
     = 12.341e3
 
-To force the exponent used by :func:`eng`, pass an optional second argument. It accepts either a direct exponent that is a multiple of 3, or a matching power of ten (including SI prefixes)::
+To force the exponent used by :func:`eng`, pass an optional second argument. It can be an exponent that is a multiple of 3, or the matching power of ten::
 
-    eng(0.000123456; [milli])
+    eng(0.000123456; -3)
     = 0.123456e-3
 
-    eng(0.000123456; -4)
-    = 1.23456e-4
+    eng(0.000123456; -6)
+    = 123.456e-6
+
+    eng(123456789.123456789; 1e6)
+    = 123.456789123456789e6
 
 For assembly-style fixed-width formatting, use :func:`binpad`, :func:`octpad`, or :func:`hexpad`.
 These functions only accept real, dimensionless integer arguments and also only affect the immediate result::
