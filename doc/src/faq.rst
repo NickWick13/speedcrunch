@@ -566,6 +566,28 @@ Why is ``(-8)^(1/3)`` a complex number and not -2?
 Fractional powers give the principal complex root. For a real root, use
 ``cbrt(-8) = -2``, or ``root(3; -8) = -2``.
 
+.. _faq-powmod:
+
+Why does ``mod()`` give a wrong result with a large power?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The power is calculated first, and it can have more digits than SpeedCrunch
+can store (see :ref:`faq-precision`). For example, ``3^233`` has 112 digits, so
+the last digits are lost and the remainder is wrong:
+
+.. parsed-literal::
+
+   ``mod(3^233; 353)``
+   ``= 99``
+
+Use ``powmod(base; exponent; modulo)`` instead. It never builds the full power,
+so the result is exact:
+
+.. parsed-literal::
+
+   ``powmod(3; 233; 353)``
+   ``= 248``
+
 .. _faq-number-bases:
 
 How do I use binary, octal and hexadecimal numbers?
